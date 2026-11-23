@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0c1018">
+<title>GATO BLÁSTER: Cueva Zombi — Juego 2D</title>
+<style>
+:root { color-scheme:dark; --gold:#ffe2a0; --ink:#e5e9e8; --soft:#a5adb5; --line:#687477; --mint:#a4ffe0; }
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#0b0e15;color:var(--ink)}
+body{font:14px/1.45 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;touch-action:pan-y;overscroll-behavior-y:contain;background:radial-gradient(ellipse at 50% 12%,#25313a 0%,#10151e 56%,#090b12 100%);padding:14px 12px 20px}
+button{-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;font:inherit}
+.page{width:min(100%,1000px);margin:auto}
+.topline{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+h1{font-size:clamp(21px,3.6vw,33px);letter-spacing:.07em;line-height:1.1;margin:0;color:var(--gold);text-shadow:3px 3px #121f20}
+.eyebrow{color:#78b9a9;font-size:11px;font-weight:800;letter-spacing:.19em;margin:5px 0 0}
+.level-tag{color:#b9e8d3;border:1px solid #4c806e;background:#152721;padding:5px 9px;font-size:11px;font-weight:800;letter-spacing:.08em}
+.game{position:relative;aspect-ratio:16/9;overflow:hidden;background:#11171e;border:4px solid #526267;box-shadow:0 0 0 3px #0a1518,0 8px 0 #050a0c,0 20px 40px #0009;image-rendering:pixelated}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}
+.hud{position:absolute;inset:0 0 auto 0;display:flex;align-items:flex-start;justify-content:space-between;gap:5px;padding:10px 12px 0;pointer-events:none;font-weight:900;font-size:clamp(10px,1.65vw,15px);color:#fff4cb;text-shadow:2px 2px 0 #080d10,0 0 7px #030709;line-height:1.4}
+.hud-box{background:#0a1318bf;border:2px solid #61716b;padding:5px 7px;min-width:0}
+.hud-box small{font-size:.75em;color:#a6d5c8;letter-spacing:.05em;display:block}
+.hearts{color:#ff8990;letter-spacing:2px;white-space:nowrap}
+#weaponName{color:#baf8e8;white-space:nowrap}
+#kills{white-space:nowrap}
+.boss-health{position:absolute;left:22%;right:22%;top:61px;padding:5px 7px;background:#131019eb;border:2px solid #8b777d;text-align:center;display:none;pointer-events:none}
+.boss-health strong{display:block;color:#ffd2a8;text-shadow:1px 2px #25121b;font-size:clamp(9px,1.3vw,13px);letter-spacing:.08em}
+.hp-track{height:9px;background:#38202c;border:1px solid #ac7a7d;margin-top:4px}
+.hp-fill{height:100%;width:100%;background:linear-gradient(90deg,#e36a71,#fac176);transition:width .1s linear}
+.announcement{position:absolute;left:9%;right:9%;top:26%;text-align:center;pointer-events:none;font-size:clamp(16px,4vw,34px);font-weight:900;color:#ffb8a1;text-shadow:3px 3px #3b1628,0 0 20px #000;letter-spacing:.07em;opacity:0}
+.announcement.active{opacity:1}
+.overlay{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:12px;background:#070c12d9;z-index:2}
+.overlay.hidden{display:none}
+.panel{width:min(100%,520px);max-height:100%;overflow:auto;padding:clamp(10px,2.2vw,23px);text-align:center;border:3px solid #9cd4bd;background:linear-gradient(160deg,#1c2d34,#101c22 78%);box-shadow:7px 7px 0 #03070b}
+.panel h2{color:#ffe4a2;font-size:clamp(20px,3.2vw,29px);line-height:1.15;margin:3px 0 9px;text-shadow:3px 3px #27332b}
+.panel p{font-size:clamp(11px,1.9vw,15px);margin:8px auto;color:#d9e4df;max-width:460px}
+.panel em{color:#b1ffcd;font-style:normal}
+.start{color:#16251f;background:#ffd77f;border:3px solid #fff1b6;box-shadow:4px 4px #917148;font-weight:900;padding:10px 22px;margin:8px 0 4px;letter-spacing:.1em;font-size:clamp(12px,2.2vw,16px)}
+.start:active{transform:translate(3px,3px);box-shadow:1px 1px #917148}
+.control-zone{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:13px 0 9px;user-select:none;-webkit-user-select:none}
+.pad-side{display:flex;align-items:center;gap:13px;min-width:0}
+.joystick{width:118px;height:118px;min-width:118px;position:relative;touch-action:none;border-radius:50%;border:3px solid #617a79;background:radial-gradient(circle,#233e42,#14272f);box-shadow:inset 0 0 0 10px #0e232b,0 5px #04090d}
+.joystick:after{content:"✚";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#688a83;font-size:36px;pointer-events:none}
+.knob{position:absolute;z-index:1;left:50%;top:50%;height:47px;width:47px;margin-left:-23.5px;margin-top:-23.5px;border-radius:50%;background:linear-gradient(150deg,#b9dac9,#65958c);border:3px solid #ddf4d9;box-shadow:0 4px 0 #325551;pointer-events:none;transform:translate(0,0)}
+.move-label,.fire-label{font-size:11px;font-weight:900;color:#a5c5be;letter-spacing:.05em}
+.fire-side{display:flex;align-items:center;justify-content:flex-end;gap:13px}
+.shoot{height:91px;width:91px;min-width:91px;border-radius:50%;color:#fff5e8;font-weight:900;background:radial-gradient(circle at 38% 25%,#e57660,#9d3544);border:4px solid #ffb7a1;box-shadow:0 6px #50252b,0 0 0 5px #1b1924}
+.shoot.down,.shoot:active{transform:translateY(4px);box-shadow:0 2px #50252b,0 0 0 5px #1b1924;background:#f08060}
+.fire-label{text-align:right;max-width:130px}
+.footnote{margin:8px 1px 0;color:#a6b7b5;font-size:12px;text-align:center}
+.footnote strong{color:#d1ebdf}
+.tip{margin:6px 0 0;text-align:center;color:#88afa9;font-size:11px}
+@media (hover:hover) and (pointer:fine){.control-zone{display:none}.footnote{margin-top:20px}}
+@media(max-width:640px){body{padding:8px 7px 20px}.topline{margin:0 2px 10px}.level-tag{font-size:10px}.game{border-width:2px;box-shadow:0 0 0 2px #0a1518,0 6px #050a0c}.hud{padding:4px;gap:3px;font-size:10px}.hud-box{padding:3px 4px;border-width:1px}.boss-health{top:43px;left:17%;right:17%;padding:3px 4px}.hp-track{height:6px}.panel{border-width:2px;padding:10px}.panel h2{margin:2px 0 5px}.panel p{line-height:1.3;margin:5px auto}.control-zone{margin:15px 8px 8px}.joystick{height:108px;width:108px;min-width:108px}.fire-side{gap:8px}.shoot{height:82px;width:82px;min-width:82px}.move-label,.fire-label{font-size:10px}.fire-label{max-width:110px}.footnote{font-size:11px}}
+@media(max-width:370px){.move-label,.fire-label{display:none}.control-zone{margin:12px 18px 4px}.hud{font-size:9px}}
+@media(orientation:landscape) and (max-height:460px){body{padding:3px 9px}.topline{margin-bottom:4px}.eyebrow{display:none}h1{font-size:15px}.game{width:min(calc((100dvh - 48px) * 16 / 9),72vw);margin:auto}.control-zone{position:absolute;bottom:7px;left:5px;right:5px;pointer-events:none;margin:0}.joystick,.shoot{pointer-events:auto;opacity:.8}.move-label,.fire-label{display:none}.joystick{height:90px;width:90px;min-width:90px}.shoot{height:75px;width:75px;min-width:75px}.footnote,.tip{display:none}}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="topline"><div><h1>🐈 GATO BLÁSTER</h1><p class="eyebrow">LA CUEVA DE LOS PERROS ZOMBIS</p></div><span class="level-tag">NIVEL 1 · CUEVA OSCURA</span></header>
+  <section class="game" id="gameArea" aria-label="Minijuego 2D de supervivencia con vista diagonal desde arriba">
+    <canvas id="screen" width="640" height="360" aria-label="Gato luchando contra perros zombis en una cueva de píxeles"></canvas>
+    <div class="hud" aria-live="off">
+      <div class="hud-box"><small>VIDAS</small><div class="hearts" id="hearts">♥♥♥♥♥♥♥</div></div>
+      <div class="hud-box"><small>ARMA</small><div id="weaponName">PISTOLA</div></div>
+      <div class="hud-box"><small id="counterLabel">ZOMBIS</small><div id="kills">0 / 12</div></div>
+    </div>
+    <div id="bossbar" class="boss-health"><strong>☠ REY DE LOS PERROS ZOMBIS ☠</strong><div class="hp-track"><div id="bossfill" class="hp-fill"></div></div></div>
+    <div class="announcement" id="announcement">¡VIENE EL JEFE!</div>
+    <div class="overlay" id="overlay">
+      <div class="panel"><h2 id="overlayTitle">¡LA CUEVA ZOMBI!</h2>
+        <p id="overlayText">Entra en la cueva y derrota a <strong>12 perros zombis</strong> para que aparezca el <strong>jefe final</strong>. Recoge las armas brillantes que sueltan los enemigos. <em>¡Tienes 7 corazones y apuntado automático!</em></p>
+        <button id="startButton" class="start" type="button">▶ EMPEZAR NIVEL</button>
+      </div>
+    </div>
+  </section>
+  <div class="control-zone" aria-label="Controles para teléfonos y tabletas">
+    <div class="pad-side"><div class="joystick" id="joystick" role="group" aria-label="Palanca de movimiento"><div class="knob" id="knob"></div></div><span class="move-label">MUEVE<br>AL GATO</span></div>
+    <div class="fire-side"><span class="fire-label">DISPARA<br>Apunta solo al enemigo más cercano</span><button id="shoot" class="shoot" type="button" aria-label="Mantener presionado para disparar">FUEGO<br>✦</button></div>
+  </div>
+  <p class="footnote"><strong>PC:</strong> WASD o flechas para moverte · Espacio, J o clic sostenido para disparar · Ratón para apuntar.</p>
+  <p class="tip">CELULAR: usa la palanca izquierda y mantén pulsado FUEGO. Si giras el teléfono, el juego se ve más grande.</p>
+</main>
+<script>
+(() => {
+'use strict';
+const canvas=document.getElementById('screen');
+const ctx=canvas.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
+const W=640,H=360,GOAL=12;
+const edge={minX:31,maxX:609,minY:100,maxY:335};
+const el=id=>document.getElementById(id);
+const overlay=el('overlay'),title=el('overlayTitle'),description=el('overlayText'),startButton=el('startButton');
+const hearts=el('hearts'),weaponName=el('weaponName'),killsLabel=el('kills'),counterLabel=el('counterLabel'),bossbar=el('bossbar'),bossfill=el('bossfill'),announcement=el('announcement');
+const keys=new Set();const joy={x:0,y:0};let firingTouch=false,firingMouse=false,aimMouse=false,mouse={x:320,y:190};
+const weapons=[
+ {name:'PISTOLA',rate:18,speed:8.2,damage:1,spread:0,amount:1,color:'#ffdb88',size:3},
+ {name:'METRALLETA',rate:7,speed:9.2,damage:1,spread:0.045,amount:1,color:'#b5ffe2',size:3},
+ {name:'ESCOPETA',rate:20,speed:8.5,damage:1,spread:0.22,amount:5,color:'#ffd692',size:3.5},
+ {name:'BLÁSTER LÁSER',rate:8,speed:11.5,damage:2,spread:0,amount:1,color:'#9af9ff',size:5}
+];
+let phase='menu',frame=0,score=0,spawnIn=75,player,enemyDogs=[],playerShots=[],enemyShots=[],drops=[],sparks=[],boss=null,shake=0,noticeTimer=0,toast='',toastTimer=0,menuAnim=0;
+const rand=(a,b)=>Math.random()*(b-a)+a;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rect=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h))};
+const circle=(x,y,r,c)=>{ctx.beginPath();ctx.arc(Math.round(x),Math.round(y),r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill()};
+const rngSeed=(()=>{let s=20261122;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}})();
+const floorMarks=Array.from({length:140},()=>({x:Math.round(rngSeed()*W),y:Math.round(91+rngSeed()*260),w:2+Math.floor(rngSeed()*13),c:rngSeed()>.45?'#2b3338':'#20282e'}));
+const stones=Array.from({length:37},()=>({x:17+Math.floor(rngSeed()*606),y:111+Math.floor(rngSeed()*218),s:3+Math.floor(rngSeed()*6)}));
+const fungi=[{x:105,y:121},{x:569,y:147},{x:77,y:285},{x:523,y:306},{x:304,y:117},{x:184,y:318}];
+const crystals=[{x:50,y:152},{x:590,y:235},{x:242,y:313},{x:456,y:111}];
+function freshPlayer(){return {x:320,y:242,r:10,hp:7,maxHp:7,inv:0,cool:0,tier:0,dir:1,step:0}}
+player=freshPlayer();
+function showNotice(text,timer=100){toast=text;toastTimer=timer}
+function burst(x,y,color,n=12){for(let i=0;i<n;i++)sparks.push({x,y,vx:rand(-2.1,2.1),vy:rand(-2.8,1.5),life:rand(14,35),color,size:rand(2,5)|0})}
+function setHud(){hearts.textContent='♥'.repeat(Math.max(0,player.hp))+'♡'.repeat(player.maxHp-player.hp);weaponName.textContent=weapons[player.tier].name;killsLabel.textContent=boss?'JEFE FINAL':`${score} / ${GOAL}`;counterLabel.textContent=boss?'BATALLA FINAL':'ZOMBIS';bossbar.style.display=boss?'block':'none';if(boss)bossfill.style.width=Math.max(0,100*boss.hp/boss.maxHp)+'%'}
+function start(){player=freshPlayer();enemyDogs=[];playerShots=[];enemyShots=[];drops=[];sparks=[];boss=null;score=0;frame=0;spawnIn=80;shake=0;noticeTimer=0;toast='';toastTimer=0;phase='playing';overlay.classList.add('hidden');resetInputs();setHud();startButton.blur()}
+function finish(win){phase=win?'won':'lost';resetInputs();overlay.classList.remove('hidden');if(win){title.textContent='🏆 ¡NIVEL 1 COMPLETADO!';description.innerHTML=`¡Derrotaste a los <strong>${GOAL} perros zombis</strong> y venciste al <strong>REY DE LOS PERROS</strong>!<br><em>La cueva está a salvo.</em>`}else{title.textContent='¡EL GATO CAYÓ!';description.innerHTML=`Lograste derrotar a <strong>${score} zombis</strong>. ¡Vuelve a intentarlo! Las armas aparecen cada 3 bajas y tienes 7 vidas.`}startButton.textContent='↻ VOLVER A JUGAR';}
+function resetInputs(){keys.clear();joy.x=0;joy.y=0;firingTouch=false;firingMouse=false;el('knob').style.transform='translate(0px,0px)';el('shoot').classList.remove('down')}
+function spawnDog(){let side=Math.floor(rand(0,4)),x,y;if(side===0){x=rand(38,602);y=108}else if(side===1){x=rand(38,602);y=333}else if(side===2){x=39;y=rand(110,330)}else{x=601;y=rand(110,330)};if(Math.hypot(x-player.x,y-player.y)<135){x=x<320?42:599;y=y<208?113:330}enemyDogs.push({x,y,r:12,hp:1,speed:rand(.60,.83),walk:rand(0,10),variant:Math.floor(rand(0,3)),hit:0})}
+function dropItem(x,y,tier){drops.push({x:clamp(x,42,598),y:clamp(y,109,325),tier,kind:'weapon',life:950,bob:rand(0,6)})}
+function healDrop(x,y){drops.push({x,y,tier:0,kind:'heal',life:730,bob:rand(0,6)})}
+function summonBoss(){enemyDogs.forEach(d=>burst(d.x,d.y,'#6d9881',4));enemyDogs.length=0;enemyShots.length=0;boss={x:520,y:156,r:30,hp:16,maxHp:16,speed:.53,fireIn:130,walk:0,hit:0};noticeTimer=170;announcement.textContent='☠ ¡APARECIÓ EL JEFE! ☠';announcement.classList.add('active');burst(boss.x,boss.y,'#a7ffd2',37);dropItem(player.x+35,player.y-18,3);showNotice('¡Recoge el BLÁSTER LÁSER!',180);setHud()}
+function killDog(d,index){burst(d.x,d.y,'#a2c1a1',15);enemyDogs.splice(index,1);score++;shake=3;
+ if(score%3===0){const tier=Math.min(3,score/3);dropItem(d.x,d.y,tier);showNotice('¡ARMA NUEVA! Acércate al brillo ✦',115)}
+ if(score%4===0)healDrop(clamp(d.x+14,38,598),clamp(d.y+8,111,324));
+ setHud();if(score>=GOAL)summonBoss()}
+function nearest(){let best=null,dist=Infinity;for(const dog of enemyDogs){let d=Math.hypot(dog.x-player.x,dog.y-player.y);if(d<dist){dist=d;best=dog}}if(boss){best=boss}return best}
+function shoot(){if(player.cool>0||phase!=='playing')return;const weap=weapons[player.tier];player.cool=weap.rate;let angle=player.dir>0?0:Math.PI;const target=nearest();if(aimMouse){angle=Math.atan2(mouse.y-player.y+5,mouse.x-player.x)}else if(target){angle=Math.atan2(target.y-player.y-7,target.x-player.x)}
+ player.dir=Math.cos(angle)>=0?1:-1;
+ for(let i=0;i<weap.amount;i++){let a=angle+(i-(weap.amount-1)/2)*weap.spread+(weap.amount===1?rand(-weap.spread,weap.spread):0);playerShots.push({x:player.x+Math.cos(a)*12,y:player.y-11+Math.sin(a)*12,vx:Math.cos(a)*weap.speed,vy:Math.sin(a)*weap.speed,life:71,dmg:weap.damage,color:weap.color,size:weap.size});}
+ burst(player.x+Math.cos(angle)*16,player.y-10+Math.sin(angle)*16,weap.color,weap.amount>1?6:3);
+ }
+function damagePlayer(sourceX,sourceY){if(player.inv>0)return;player.hp--;player.inv=98;shake=7;player.x=clamp(player.x+(player.x>=sourceX?17:-17),edge.minX,edge.maxX);player.y=clamp(player.y+(player.y>=sourceY?11:-11),edge.minY,edge.maxY);burst(player.x,player.y-14,'#ffecc5',13);setHud();if(player.hp<=0)finish(false)}
+function update(){if(phase!=='playing')return;frame++;
+ let dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'))+joy.x;
+ let dy=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'))+joy.y;
+ let len=Math.hypot(dx,dy);if(len>.1){dx/=Math.max(1,len);dy/=Math.max(1,len);player.x=clamp(player.x+dx*2.75,edge.minX,edge.maxX);player.y=clamp(player.y+dy*2.35,edge.minY,edge.maxY);player.step+=.24;if(Math.abs(dx)>.22)player.dir=dx>=0?1:-1}
+ if(player.inv>0)player.inv--;if(player.cool>0)player.cool--;if(shake>0)shake--;if(toastTimer>0)toastTimer--;if(noticeTimer>0){noticeTimer--;if(!noticeTimer)announcement.classList.remove('active')}
+ if(firingTouch||firingMouse||keys.has(' ')||keys.has('j')||keys.has('k'))shoot();
+ if(!boss&&score<GOAL){spawnIn--;if(spawnIn<=0){if(enemyDogs.length<6)spawnDog();spawnIn=105+rand(0,40)}}
+ for(const dog of enemyDogs){const vx=player.x-dog.x,vy=player.y-dog.y,dist=Math.max(1,Math.hypot(vx,vy));dog.walk+=.15;dog.x+=vx/dist*dog.speed;dog.y+=vy/dist*dog.speed;if(dog.hit>0)dog.hit--;if(dist<player.r+dog.r-4){damagePlayer(dog.x,dog.y);if(phase!=='playing')return}}
+ if(boss){boss.walk+=.10;if(boss.hit>0)boss.hit--;const vx=player.x-boss.x,vy=player.y-boss.y,dist=Math.max(1,Math.hypot(vx,vy));if(dist>67){boss.x+=vx/dist*boss.speed;boss.y+=vy/dist*boss.speed}if(dist<boss.r+player.r-7){damagePlayer(boss.x,boss.y);if(phase!=='playing')return}boss.fireIn--;if(boss.fireIn<=0){const a=Math.atan2(player.y-boss.y,player.x-boss.x);for(const offset of [-.18,0,.18]){const z=a+offset;enemyShots.push({x:boss.x,y:boss.y-16,vx:Math.cos(z)*1.65,vy:Math.sin(z)*1.65,r:5,life:170})}boss.fireIn=145;burst(boss.x,boss.y-15,'#8efec7',9)}}
+ for(let i=playerShots.length-1;i>=0;i--){const bullet=playerShots[i];bullet.x+=bullet.vx;bullet.y+=bullet.vy;bullet.life--;let hit=false;
+  if(boss&&Math.hypot(bullet.x-boss.x,bullet.y-(boss.y-13))<boss.r+bullet.size){boss.hp-=bullet.dmg;boss.hit=5;burst(bullet.x,bullet.y,'#9fd6b6',5);hit=true;setHud();if(boss.hp<=0){burst(boss.x,boss.y-13,'#e0fcae',75);boss=null;finish(true);return}}
+  if(!hit)for(let j=enemyDogs.length-1;j>=0;j--){const d=enemyDogs[j];if(Math.hypot(bullet.x-d.x,bullet.y-(d.y-10))<d.r+bullet.size+4){d.hp-=bullet.dmg;hit=true;if(d.hp<=0){killDog(d,j)}else d.hit=6;break}}
+  if(hit||bullet.life<=0||bullet.x<0||bullet.x>W||bullet.y<66||bullet.y>H+10)playerShots.splice(i,1);
+ }
+ for(let i=enemyShots.length-1;i>=0;i--){const b=enemyShots[i];b.x+=b.vx;b.y+=b.vy;b.life--;if(Math.hypot(b.x-player.x,b.y-(player.y-8))<player.r+b.r+2){enemyShots.splice(i,1);damagePlayer(b.x,b.y);if(phase!=='playing')return;continue}if(b.life<=0)enemyShots.splice(i,1)}
+ for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.life--;d.bob+=.055;if(Math.hypot(d.x-player.x,d.y-player.y)<23){if(d.kind==='heal'){player.hp=Math.min(player.maxHp,player.hp+2);showNotice('+2 CORAZONES ♥',95)}else{const previous=player.tier;player.tier=Math.max(player.tier,d.tier);if(player.tier>previous)showNotice(`¡CONSEGUISTE ${weapons[player.tier].name}!`,125);else{player.hp=Math.min(player.maxHp,player.hp+1);showNotice('MUNICIÓN EXTRA: +1 VIDA ♥',90)}}burst(d.x,d.y,d.kind==='heal'?'#ff9ba2':'#8af9e7',19);drops.splice(i,1);setHud();continue}if(d.life<=0)drops.splice(i,1)}
+ for(let i=sparks.length-1;i>=0;i--){const p=sparks[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.075;p.vx*=.98;p.life--;if(p.life<=0)sparks.splice(i,1)}
+}
+function glow(x,y,r,color){const grad=ctx.createRadialGradient(x,y,2,x,y,r);grad.addColorStop(0,color);grad.addColorStop(1,'#00000000');ctx.fillStyle=grad;ctx.fillRect(x-r,y-r,r*2,r*2)}
+function bg(){
+ rect(0,0,W,H,'#10151d');rect(0,56,W,305,'#1d252b');
+ // Oblique high cave wall across the top, with steep shadowed sides.
+ rect(0,0,W,84,'#0a1017');rect(0,65,W,13,'#121a20');rect(0,78,W,16,'#2b3436');rect(0,90,W,9,'#384240');
+ for(let x=0;x<640;x+=35){const h=14+((x*17)%31);rect(x,58,22,h,'#0d151c');rect(x+6,65,10,h-6,'#182329');rect(x-2,88,25,3,'#44504b')}
+ // Top-down floor: rippling slabs, cracks, and rock flecks.
+ for(let y=102;y<H;y+=37){for(let x=15+((y%3)*8);x<W-8;x+=86){rect(x,y,52,2,'#293237');rect(x+21,y+18,45,2,'#171f26')}}
+ for(const m of floorMarks)rect(m.x,m.y,m.w,2,m.c);
+ for(const stone of stones){rect(stone.x,stone.y,stone.s*2,3,'#171d25');rect(stone.x+2,stone.y-3,stone.s,4,'#465251');rect(stone.x+3,stone.y-4,Math.max(2,stone.s-2),1,'#69746d')}
+ // Cave walls on the left/right with rim light (visible from above and the side).
+ rect(0,95,19,265,'#0a1118');rect(18,105,7,248,'#39423b');rect(21,122,4,230,'#586159');rect(619,95,21,265,'#0b1118');rect(614,111,7,243,'#3e4940');rect(614,132,3,213,'#66736a');
+ for(let y=112;y<355;y+=43){rect(0,y,22,7,'#27312f');rect(618,y+15,22,6,'#27332f')}
+ // Stalactites and dark roots along the top edge.
+ for(let x=25;x<630;x+=51){const l=9+(x*7)%25;rect(x,81,10,l,'#131c22');rect(x+3,81,4,l+8,'#20292b')}
+ // Puddles / moss.
+ glow(105,215,88,'#123a2f55');glow(531,262,83,'#1e405151');glow(302,146,95,'#1d2e3955');
+ for(const f of fungi){glow(f.x,f.y,28,'#48c7a31c');rect(f.x-2,f.y-2,5,8,'#416b59');rect(f.x-5,f.y-6,11,6,'#77d9ad');rect(f.x-2,f.y-8,5,2,'#d0ffca')}
+ for(const c of crystals){glow(c.x,c.y,43,'#6bfff21b');rect(c.x-6,c.y-2,12,8,'#275c5b');rect(c.x-3,c.y-11,7,16,'#62c3aa');rect(c.x-1,c.y-15,3,10,'#c0fff3');rect(c.x+6,c.y-7,5,10,'#469b97')}
+ // Foreground jagged stone ridges.
+ for(let x=0;x<W;x+=47){rect(x,349-((x*3)%7),29,10,'#0c151a');rect(x+9,342-((x*5)%8),12,14,'#172026')}
+ // Lantern-like localized illumination around protagonist.
+ glow(player.x,player.y-10,130,'#a5d9a30d');
+}
+function dogSprite(d){const x=Math.round(d.x),y=Math.round(d.y+Math.sin(d.walk)*1.2),flash=d.hit>0;const body=flash?'#e8f9d7':d.variant===0?'#7e9a7a':d.variant===1?'#6f8c80':'#899078';const dark='#354c42',eye='#e2f89d';
+ rect(x-14,y-3,29,6,'#0b1319');rect(x-9,y-6,22,5,'#151e21');
+ // Legs and tail on ground plane.
+ rect(x-9,y-8,5,8,dark);rect(x+6,y-8,5,8,dark);rect(x+11,y-18,7,5,body);rect(x+17,y-22,4,7,dark);
+ rect(x-12,y-22,25,16,body);rect(x-9,y-24,17,5,'#9bb298');rect(x-12,y-22,7,4,dark);
+ // 3/4 side view head, folded ear and nose.
+ rect(x-18,y-27,15,17,body);rect(x-17,y-32,6,9,dark);rect(x-16,y-23,3,3,eye);rect(x-5,y-22,3,3,eye);rect(x-22,y-16,9,7,'#496553');rect(x-22,y-15,4,3,'#151c1d');rect(x-14,y-13,5,2,'#283d36');
+ // Zombie stitches: harmless arcade design.
+ rect(x+3,y-20,3,2,'#293d37');rect(x+8,y-16,4,2,'#293d37');rect(x-2,y-11,4,2,'#3e5646');
+}
+function bossSprite(b){let x=Math.round(b.x),y=Math.round(b.y+Math.sin(b.walk)*1.8);const flash=b.hit>0,skin=flash?'#e9ffd5':'#577966';
+ rect(x-34,y-7,74,9,'#091419');rect(x-28,y-12,61,8,'#122225');
+ // Huge legs, body, tail and jagged mane.
+ rect(x-27,y-22,13,19,'#293d3a');rect(x+16,y-22,13,19,'#293d3a');rect(x+23,y-45,20,10,skin);rect(x+38,y-55,8,18,'#344f43');
+ rect(x-31,y-58,65,37,skin);rect(x-26,y-61,54,8,'#799887');rect(x-31,y-56,10,9,'#243b37');rect(x+22,y-50,10,21,'#3a5748');
+ // Massive head, muzzle and glowing zombie eyes.
+ rect(x-40,y-72,45,40,skin);rect(x-38,y-84,16,20,'#2a4339');rect(x-11,y-85,13,20,'#2a4339');rect(x-40,y-73,37,8,'#86a58c');rect(x-35,y-63,8,6,'#f6db8b');rect(x-15,y-63,8,6,'#f6db8b');rect(x-33,y-61,3,4,'#201d23');rect(x-13,y-61,3,4,'#201d23');rect(x-47,y-49,30,17,'#688775');rect(x-50,y-42,12,6,'#1b3130');rect(x-35,y-34,16,4,'#d8e7aa');
+ // Crown / skull motif.
+ rect(x-30,y-87,24,5,'#c0a56b');rect(x-31,y-93,5,8,'#e9c982');rect(x-19,y-96,5,10,'#e9c982');rect(x-9,y-93,5,8,'#e9c982');rect(x-27,y-84,17,4,'#6b6544');
+ // Collar with spikes.
+ rect(x-8,y-35,33,6,'#2c3235');for(let i=0;i<4;i++)rect(x-4+i*9,y-40,3,8,'#dfd4af');
+}
+function catSprite(p){if(p.inv>0&&frame%7<3)return;let x=Math.round(p.x),y=Math.round(p.y+Math.sin(p.step)*.8),o=p.dir;const fur='#d8b579',light='#ffe2a3',shade='#886b55';
+ rect(x-13,y-2,29,5,'#10171c');rect(x-8,y-6,17,3,'#1a2224');
+ // Tail arcing behind the body.
+ rect(x+(o>0?-15:10),y-17,5,13,fur);rect(x+(o>0?-19:14),y-21,8,6,light);
+ rect(x-8,y-17,17,13,fur);rect(x-5,y-9,5,6,shade);rect(x+3,y-9,5,6,shade);
+ // Ears, head, eyes: slightly overhead, side-looking.
+ rect(x-9,y-31,7,12,fur);rect(x+3,y-31,7,12,fur);rect(x-8,y-31,4,6,'#e59fa0');rect(x+5,y-31,4,6,'#e59fa0');rect(x-12,y-27,24,18,light);rect(x-9,y-26,18,4,fur);
+ rect(x-7,y-19,4,4,'#293c39');rect(x+4,y-19,4,4,'#293c39');rect(x-1,y-15,3,3,'#e28f83');rect(x-8,y-11,5,2,'#f2e2c4');rect(x+5,y-11,5,2,'#f2e2c4');
+ // Gun is held outward, with a colored glow for upgraded weapons.
+ const gunColor=player.tier===3?'#69eafa':player.tier===2?'#e6ad7b':'#829398';let gx=x+(o>0?9:-21),gy=y-19;
+ rect(gx,gy,14,5,'#303c42');rect(gx+2,gy-3,9,4,gunColor);rect(gx+6,gy+4,4,7,'#5e5555');rect(gx+(o>0?13:-4),gy-1,5,3,'#c3e3cb');
+}
+function drawDrop(d){const x=Math.round(d.x),y=Math.round(d.y-11+Math.sin(d.bob)*3);const heal=d.kind==='heal';glow(x,y,31,heal?'#ff667b44':'#8afff444');rect(x-12,y-13,24,27,'#122527');rect(x-11,y-12,22,24,heal?'#7a3447':'#2d746b');rect(x-8,y-9,16,18,heal?'#c85e76':'#89ecd5');
+ if(heal){rect(x-2,y-7,5,15,'#fff1db');rect(x-7,y-2,15,5,'#fff1db')}else{rect(x-7,y-3,14,4,'#16363b');rect(x-5,y-7,12,4,'#1f3e3a');rect(x,y+1,4,7,'#31564d');rect(x+8,y-12,3,3,'#fff4ac')}
+ rect(x-13,y-14,26,2,heal?'#ffb6c5':'#b8ffec');rect(x-13,y+13,26,2,heal?'#ffb6c5':'#b8ffec');
+ if(!heal){ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillStyle='#e0fff0';ctx.fillText(['','SMG','SHOT','LÁSER'][d.tier]||'ARMA',x,y-19)}
+}
+function draw(){ctx.save();if(shake>0&&phase==='playing')ctx.translate(Math.round(rand(-shake,shake)*.3),Math.round(rand(-shake,shake)*.3));bg();
+ // Sort all living characters by y to mimic an oblique overhead camera.
+ const sprites=[...enemyDogs.map(d=>({y:d.y,draw:()=>dogSprite(d)})),{y:player.y,draw:()=>catSprite(player)}];if(boss)sprites.push({y:boss.y,draw:()=>bossSprite(boss)});sprites.sort((a,b)=>a.y-b.y);for(const s of sprites)s.draw();
+ for(const d of drops)drawDrop(d);
+ for(const b of playerShots){glow(b.x,b.y,b.size*4,b.color+'22');rect(b.x-b.size/2,b.y-b.size/2,b.size*2,b.size,b.color)}
+ for(const b of enemyShots){glow(b.x,b.y,17,'#9bff9133');circle(b.x,b.y,b.r,'#7ff594');rect(b.x-2,b.y-2,4,4,'#f2fff4')}
+ for(const p of sparks)rect(p.x,p.y,p.size,p.size,p.color);
+ // Darkening at screen corners keeps the cave atmosphere.
+ const vignette=ctx.createRadialGradient(320,200,105,320,190,390);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#04080ba8');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
+ if(toastTimer>0&&phase==='playing'){rect(113,319,414,25,'#0b161bcf');ctx.textAlign='center';ctx.font='bold 14px monospace';ctx.fillStyle='#f5ffcb';ctx.fillText(toast,320,336)}
+ if(phase==='menu'){// small ambient animation behind the menu
+ const pulse=Math.sin(menuAnim/15)*4;glow(335,225,40+pulse,'#d3ffcd1b')}
+ ctx.restore()}
+let last=0,acc=0;function loop(t){if(!last)last=t;acc=Math.min(110,acc+(t-last));last=t;let count=0;while(acc>=16.667&&count++<5){if(phase==='playing')update();menuAnim++;acc-=16.667}draw();requestAnimationFrame(loop)}
+startButton.addEventListener('click',start);
+const movementKeys=['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d',' ','j','k'];
+window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(movementKeys.includes(k)){e.preventDefault();keys.add(k)}if(k==='enter'&&phase!=='playing')start()},{passive:false});
+window.addEventListener('keyup',e=>{keys.delete(e.key.toLowerCase())});
+window.addEventListener('blur',resetInputs);
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;let r=canvas.getBoundingClientRect();mouse={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};aimMouse=true});
+canvas.addEventListener('pointerleave',()=>{aimMouse=false;firingMouse=false});
+canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){if(e.button!==0)return;firingMouse=true;canvas.setPointerCapture(e.pointerId)}else{e.preventDefault();firingTouch=true;canvas.setPointerCapture(e.pointerId)}},{passive:false});
+canvas.addEventListener('pointerup',e=>{firingMouse=false;firingTouch=false;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId)});
+canvas.addEventListener('pointercancel',()=>{firingMouse=false;firingTouch=false});
+const joystick=el('joystick'),knob=el('knob');let joystickPointer=null;
+function moveJoy(e){const b=joystick.getBoundingClientRect();const ox=e.clientX-(b.left+b.width/2),oy=e.clientY-(b.top+b.height/2);const distance=Math.hypot(ox,oy),max=35,scale=distance?Math.min(distance,max)/distance:0;const x=ox*scale,y=oy*scale;joy.x=x/max;joy.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}
+function releaseJoy(e){if(joystickPointer!==null&&(!e||e.pointerId===joystickPointer)){if(e&&joystick.hasPointerCapture(e.pointerId))joystick.releasePointerCapture(e.pointerId);joystickPointer=null;joy.x=joy.y=0;knob.style.transform='translate(0px,0px)'}}
+joystick.addEventListener('pointerdown',e=>{e.preventDefault();if(joystickPointer!==null)return;joystickPointer=e.pointerId;joystick.setPointerCapture(e.pointerId);moveJoy(e)},{passive:false});
+joystick.addEventListener('pointermove',e=>{if(e.pointerId===joystickPointer)moveJoy(e)});
+joystick.addEventListener('pointerup',releaseJoy);joystick.addEventListener('pointercancel',releaseJoy);
+const shootButton=el('shoot');let firePointer=null;
+shootButton.addEventListener('pointerdown',e=>{e.preventDefault();if(firePointer!==null)return;firePointer=e.pointerId;shootButton.setPointerCapture(e.pointerId);firingTouch=true;shootButton.classList.add('down')},{passive:false});
+const releaseFire=e=>{if(firePointer===null||e.pointerId!==firePointer)return;firePointer=null;firingTouch=false;shootButton.classList.remove('down');if(shootButton.hasPointerCapture(e.pointerId))shootButton.releasePointerCapture(e.pointerId)};
+shootButton.addEventListener('pointerup',releaseFire);shootButton.addEventListener('pointercancel',releaseFire);
+window.addEventListener('contextmenu',e=>{if(e.target===canvas||e.target===joystick||e.target===shootButton)e.preventDefault()});
+setHud();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
