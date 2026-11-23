@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a101c">
+<title>GATO BLÁSTER — La llave del Among Us</title>
+<style>
+:root{color-scheme:dark;--cream:#fff0bb;--muted:#a7bac2;--teal:#73e6cc;--gold:#ffdb71;--dark:#101924}
+*{box-sizing:border-box}
+html{background:#080b13}body{margin:0;color:#eef7ec;font:14px/1.4 ui-monospace,Consolas,Menlo,monospace;background:radial-gradient(ellipse at 50% -10%,#203544 0%,#0b131f 49%,#070a10 95%);min-height:100dvh;overscroll-behavior:none}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:focus-visible{outline:3px solid #fffac2;outline-offset:2px}
+.shell{width:min(1120px,100%);margin:auto;padding:12px 10px 26px}.bar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:10px}.brand h1{font-size:clamp(19px,3vw,30px);letter-spacing:.07em;color:var(--cream);margin:0;text-shadow:3px 3px 0 #332b30}.brand p{font-weight:900;font-size:10px;letter-spacing:.16em;color:#6df2c7;margin:2px 0 0}
+.menu-actions{display:flex;gap:6px;flex-wrap:wrap}.pixelbtn{border:2px solid #859b98;border-bottom:5px solid #4c605f;background:#1b3340;color:#f1fbf2;font-size:12px;font-weight:900;letter-spacing:.025em;padding:9px 11px;white-space:nowrap}.pixelbtn:active{transform:translateY(2px);border-bottom-width:3px}.pixelbtn.gold{background:#eaba68;border-color:#fff0a6;border-bottom-color:#88613b;color:#22232b}.pixelbtn.green{background:#346957;border-color:#83d4a5;border-bottom-color:#1e3c35}.pixelbtn.red{background:#743544;border-color:#dc8593;border-bottom-color:#482631}
+.frame{border:4px solid #647d7a;box-shadow:0 0 0 3px #0b181b,0 7px 0 #080c10,0 19px 34px #0009;position:relative;background:#101921;aspect-ratio:800/450;overflow:hidden;image-rendering:pixelated}#game{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none;user-select:none}
+.hud{position:absolute;top:7px;left:7px;right:7px;display:flex;align-items:flex-start;justify-content:space-between;gap:5px;pointer-events:none;color:#fff5ce;text-shadow:2px 2px #060b10;font-size:clamp(9px,1.35vw,14px);font-weight:900}.stat{background:#0a1420d9;border:2px solid #617575;padding:4px 7px}.stat .mini{font-size:.75em;color:#87decb;letter-spacing:.055em;display:block}.stat strong{font-size:1.06em;white-space:nowrap}.health{color:#ff9a9a;letter-spacing:1px}.coins{color:#ffdc79}.stage{color:#ffeaaa}.bossbar{position:absolute;left:18%;right:18%;top:64px;border:2px solid #db8290;background:#20151bed;text-align:center;pointer-events:none;display:none;padding:3px 6px 6px;color:#ffe0aa;font-size:clamp(9px,1.5vw,14px);font-weight:bold;text-shadow:2px 2px #160b0e}.bossbar .barbg{margin-top:3px;height:10px;background:#422830;border:1px solid #a15463}.bossbar .fill{height:100%;background:linear-gradient(90deg,#e44a65,#ffb661);width:100%}.banner{position:absolute;bottom:16px;left:5%;right:5%;font-weight:900;color:#fff3b0;text-shadow:3px 3px #18202b,0 0 10px black;text-align:center;pointer-events:none;font-size:clamp(12px,2.2vw,20px);opacity:0;transition:opacity .12s}.banner.visible{opacity:1}.hint{position:absolute;right:7px;bottom:6px;color:#fff6c4;font-size:10px;background:#111a25b8;padding:3px 6px;pointer-events:none}
+.modal{position:absolute;inset:0;z-index:3;background:#030911e6;display:flex;align-items:center;justify-content:center;padding:12px}.modal.hidden{display:none}.pane{width:min(100%,650px);max-height:100%;overflow:auto;border:3px solid #87c9ad;box-shadow:6px 6px #03080c;background:linear-gradient(150deg,#263d44,#111e2a 82%);padding:16px;text-align:center;scrollbar-color:#608783 #16252d}.pane h2{font-size:clamp(18px,3.1vw,28px);line-height:1.16;color:#fff0ae;margin:2px 0 9px;text-shadow:3px 3px #1e2e31}.pane p{font-size:clamp(11px,1.6vw,14px);color:#dae5df;max-width:550px;margin:8px auto}.pane p b{color:#fff1a0}.buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;text-align:left;margin-top:13px}.shop-card{display:flex;flex-direction:column;align-items:center;gap:4px;background:#101e2a;border:2px solid #4d6871;padding:10px 7px 9px;min-width:0}.shop-card.selected{border-color:#ffe494;background:#24343d}.shop-card .pixelbtn{margin-top:auto;width:100%;white-space:normal;line-height:1.1}.shop-card h3{font-size:12px;color:#f8edc9;margin:4px 0 0;text-align:center}.shop-card p{font-size:11px;margin:1px 0 7px;text-align:center;color:#b6cbd2}.pixel-icon{display:block;width:60px;height:60px;image-rendering:pixelated;margin:0 auto}.coin-strip{display:inline-flex;align-items:center;border:2px solid #8d8e63;color:#ffe07c;background:#323022;padding:6px 12px;font-weight:bold}.muted{color:#a1b5bb}.warning{color:#ffb3a2!important}.info{border:1px solid #506879;padding:7px 10px;background:#111f2b;margin:9px 0;font-size:12px;color:#cce3db}.help{margin:13px 0 6px;text-align:center;color:#b9c9c7;font-size:12px}.help b{color:#fce7a9}.touch-ui{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:14px 13px 4px;user-select:none;-webkit-user-select:none}.touch-group{display:flex;align-items:center;gap:11px}.control-caption{font-size:11px;letter-spacing:.04em;font-weight:bold;color:#a1bab9}.joy{width:115px;height:115px;flex:none;border-radius:50%;border:3px solid #5d807e;background:radial-gradient(circle,#29434a,#11212f 72%);box-shadow:inset 0 0 0 9px #10222b,0 5px 0 #050d13;touch-action:none;position:relative}.joy:after{content:'✚';font-size:41px;color:#557b79;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.joy-knob{position:absolute;width:48px;height:48px;z-index:2;left:50%;top:50%;margin:-24px 0 0 -24px;transform:translate(0,0);border:3px solid #deeddd;border-radius:50%;background:linear-gradient(135deg,#c4e8d5,#659b91);box-shadow:0 4px #345952;pointer-events:none}.fire{width:104px;height:104px;flex:none;border-radius:50%;border:4px solid #ffc1a5;background:radial-gradient(circle at 35% 26%,#ed7f6e,#9e3745);color:#fff8e3;box-shadow:0 6px #5b2934,0 0 0 5px #222331;font-weight:900;letter-spacing:.03em;touch-action:none}.fire.down{background:#ff9872;transform:translateY(3px);box-shadow:0 2px #5b2934,0 0 0 5px #222331}.tip{text-align:center;font-size:11px;color:#83b8ae;margin:8px 0 0}.sep{height:1px;background:#415966;margin:9px 0}
+@media (hover:hover) and (pointer:fine){.touch-ui{display:none}}@media (pointer:coarse){.modal{position:fixed;inset:0;z-index:40;padding:12px;background:#040915f5}.pane{max-height:calc(100dvh - 24px);width:min(100%,680px);overflow:auto}}@media(max-width:600px){.shell{padding:7px 5px 18px}.bar{margin:0 3px 7px}.brand h1{font-size:19px}.brand p{font-size:8px}.menu-actions{gap:4px}.menu-actions .pixelbtn{font-size:10px;padding:5px 6px;border-width:1px;border-bottom-width:3px}.frame{border-width:2px}.hud{top:3px;left:3px;right:3px;gap:2px;font-size:9px}.stat{border:1px solid #637878;padding:2px 3px}.bossbar{top:39px;left:16%;right:16%;padding:1px 4px 3px}.bossbar .barbg{height:6px}.hint{font-size:8px}.modal{padding:5px}.pane{padding:9px;border-width:2px;box-shadow:3px 3px #03080c}.pane p{margin:4px auto}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.shop-card{padding:7px 3px}.shop-card p{font-size:10px}.touch-ui{margin:12px 9px 5px}.control-caption{display:none}.joy{width:106px;height:106px}.fire{width:94px;height:94px}.help{font-size:10px}}@media(max-width:360px){.hud{font-size:8px}.joy{width:91px;height:91px}.fire{width:84px;height:84px}.brand h1{font-size:17px}}@media(orientation:landscape) and (max-height:510px) and (pointer:coarse){.shell{padding:3px}.bar{margin-bottom:3px}.brand h1{font-size:14px}.brand p,.help,.tip{display:none}.frame{width:min(85vw,calc((100dvh - 34px)*800/450));margin:auto}.touch-ui{position:fixed;inset:auto 8px 7px;pointer-events:none;margin:0;z-index:2}.joy,.fire{pointer-events:auto;opacity:.76}.joy{width:82px;height:82px}.fire{width:72px;height:72px;font-size:11px}.pane{max-height:86dvh}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="bar">
+ <div class="brand"><h1>🐱 GATO BLÁSTER</h1><p>LA LLAVE DEL AMONG US · AVENTURA ZOMBI</p></div>
+ <nav class="menu-actions" aria-label="Menús del juego"><button class="pixelbtn" id="invBtn" type="button">🎒 INVENTARIO</button><button class="pixelbtn" id="shopBtn" type="button">🎭 SKINS</button><button class="pixelbtn" id="pauseBtn" type="button">Ⅱ PAUSA</button></nav>
+</header>
+<section class="frame" aria-label="Juego de disparos de desplazamiento lateral con cinco niveles">
+ <canvas id="game" width="800" height="450" aria-label="Gato de pixel art avanzando por una cueva a la derecha"></canvas>
+ <div class="hud" aria-live="off">
+  <div class="stat"><span class="mini">SALUD</span><strong id="life" class="health">♥♥♥♥♥♥♥♥♥♥</strong></div>
+  <div class="stat"><span class="mini">ARMA</span><strong id="gun">PISTOLA</strong></div>
+  <div class="stat"><span class="mini">MONEDAS</span><strong id="money" class="coins">🪙 0</strong></div>
+  <div class="stat"><span class="mini" id="objectiveLabel">ZOMBIS</span><strong id="objective">0 / 8</strong></div>
+  <div class="stat"><span class="mini">NIVEL</span><strong id="lvl" class="stage">1 / 5</strong></div>
+ </div>
+ <div class="bossbar" id="bossbar"><div>☠ REY DE LOS PERROS ZOMBIS ☠</div><div class="barbg"><div id="bossfill" class="fill"></div></div></div>
+ <div class="banner" id="notice" aria-live="polite"></div>
+ <div class="hint">AVANZA ➜</div>
+ <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><div class="pane" id="panel"></div></div>
+</section>
+<div class="touch-ui" aria-label="Controles táctiles">
+ <div class="touch-group"><div class="joy" id="joy" aria-label="Joystick para moverse" role="group"><div class="joy-knob" id="joyKnob"></div></div><div class="control-caption">MOVER<br>⬅ ⬆ ⬇ ➡</div></div>
+ <div class="touch-group"><div class="control-caption" style="text-align:right">APUNTADO<br>AUTOMÁTICO</div><button class="fire" id="fire" type="button">FUEGO<br>✦</button></div>
+</div>
+<p class="help"><b>PC:</b> A/D o ←/→ para avanzar, W/S o ↑/↓ para cambiar de carril; <b>J, espacio o clic sostenido</b> para disparar. <b>I</b> inventario, <b>T</b> skins, <b>Esc</b> pausa.</p>
+<p class="tip">En celular, usa la palanca y mantén FUEGO. Puedes girar el teléfono.</p>
+</main>
+<script>
+(()=>{'use strict';
+const cvs=document.getElementById('game'),ctx=cvs.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=false;
+const W=800,H=450,BASE=405,TOP=276,STORAGE='gato_blaster_cueva_v3';
+const $=id=>document.getElementById(id),panel=$('panel'),modal=$('modal'),keys=new Set(),joy={x:0,y:0};
+const allSkins=[
+ {id:'cat',name:'Gato original',price:0,desc:'El protagonista clásico.',color:'#e6ad6c'},
+ {id:'miku',name:'Miku',price:60,desc:'Coletas turquesa y corbata.',color:'#47d8ca'},
+ {id:'bruno',name:'Bruno 24K',price:80,desc:'Gorra, lentes y dorado.',color:'#e4b744'},
+ {id:'jax',name:'Jax (TADC)',price:55,desc:'Conejo morado travieso.',color:'#aa8dea'},
+ {id:'sonic',name:'Sonic',price:65,desc:'Erizo azul muy veloz.',color:'#428bea'},
+ {id:'teto',name:'Kasane Teto',price:55,desc:'Cabello rojo de espirales.',color:'#ff727f'},
+ {id:'pomni',name:'Pomni (TADC)',price:50,desc:'Gorro rojo y azul.',color:'#e45e67'},
+ {id:'bacon',name:'Bacon (Roblox)',price:30,desc:'Cabello de tocino.',color:'#bd8b53'},
+ {id:'amogus',name:'Astronauta rojo',price:75,desc:'Un impostor de píxeles.',color:'#f36a71'}
+];
+const pets=[
+ {id:'red',name:'AMONG US ROJO',desc:'RAPIDEZ: corres 55% más rápido.',color:'#f66b74',price:null,recover:70},
+ {id:'blue',name:'AMONG US AZUL',desc:'ESCUDO: bloquea 1 de cada 3 golpes.',color:'#60b9f7',price:105,recover:75},
+ {id:'yellow',name:'AMONG US DORADO',desc:'FORTUNA: consigues 50% más monedas.',color:'#ffdc74',price:135,recover:85}
+];
+const levels=[
+ {name:'Entrada de piedra',length:2050,goal:8,tint:'#6dafa6',maxDogs:5},
+ {name:'Túneles fluorescentes',length:2540,goal:11,tint:'#68cfbb',maxDogs:6},
+ {name:'Cementerio de huesos',length:2930,goal:14,tint:'#b68cba',maxDogs:7},
+ {name:'Trono del rey zombi',length:3440,goal:17,tint:'#c48c7a',maxDogs:7,boss:true},
+ {name:'¡Escape de la cueva!',length:2610,goal:13,tint:'#8fbcc7',maxDogs:7,escape:true}
+];
+const guns=[
+ {name:'PISTOLA',rate:19,damage:17,spd:14,pellets:1,spread:0,color:'#ffe3a1',r:4},
+ {name:'METRALLETA',rate:8,damage:12,spd:15,pellets:1,spread:.11,color:'#8effc9',r:3},
+ {name:'ESCOPETA',rate:29,damage:12,spd:14,pellets:5,spread:.25,color:'#ffb68a',r:4},
+ {name:'LÁSER',rate:12,damage:23,spd:18,pellets:1,spread:.03,color:'#86e8ff',r:5,pierce:2}
+];
+let save={coins:0,skin:'cat',skins:['cat'],pets:{red:'locked',blue:'locked',yellow:'locked'},equipped:null};
+function load(){try{const v=JSON.parse(localStorage.getItem(STORAGE)||'{}');if(v&&typeof v==='object'){save.coins=Math.max(0,Math.floor(Number(v.coins)||0));save.skins=Array.isArray(v.skins)?v.skins.filter(id=>allSkins.some(s=>s.id===id)):['cat'];if(!save.skins.includes('cat'))save.skins.push('cat');save.skin=save.skins.includes(v.skin)?v.skin:'cat';for(const p of pets){save.pets[p.id]=['locked','owned','lost'].includes(v.pets?.[p.id])?v.pets[p.id]:'locked'}save.equipped=save.pets[v.equipped]==='owned'?v.equipped:null}}catch(e){} }
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(save))}catch(e){}}
+load();
+let phase='intro',menu='intro',stage=0,t=0,cam=0,screenShake=0,toast='',toastTime=0,fireTouch=false,fireMouse=false,aimMouse=false,mouse={x:540,y:340},lastTime=0,acc=0;
+let player,boss,dogs=[],shots=[],enemyShots=[],drops=[],sparks=[],texts=[],spawnTimer=0,deadCount=0,hasKey=false,bossSpawned=false,capsuleOpened=false,portalActivated=false,stageTime=0;
+function rnd(a,b){return a+Math.random()*(b-a)}function clamp(a,min,max){return Math.max(min,Math.min(max,a))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h))}
+function ellipse(x,y,rx,ry,c){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);ctx.fill()}
+function glow(x,y,r,c){const g=ctx.createRadialGradient(x,y,2,x,y,r);g.addColorStop(0,c);g.addColorStop(1,'#00000000');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
+function label(s,x,y,size=14,color='#fff0b0'){ctx.font=`900 ${size}px monospace`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#0b1419';ctx.strokeText(s,x,y);ctx.fillStyle=color;ctx.fillText(s,x,y)}
+function hash(n){let x=Math.sin(n*127.16+stage*182.67)*43758.5453;return x-Math.floor(x)}
+function resetInputs(){keys.clear();joy.x=0;joy.y=0;fireTouch=false;fireMouse=false;$('joyKnob').style.transform='translate(0px,0px)';$('fire').classList.remove('down')}
+function announce(s,d=135){toast=s;toastTime=d;$('notice').textContent=s;$('notice').classList.add('visible')}
+function addCoins(n){if(save.equipped==='yellow')n=Math.ceil(n*1.5);save.coins+=n;persist();updateHud()}
+function updateHud(){if(!player)return;$('life').textContent='♥'.repeat(Math.max(0,player.hp))+'♡'.repeat(Math.max(0,player.maxHp-player.hp));$('gun').textContent=guns[player.gun].name;$('money').textContent='🪙 '+save.coins;$('lvl').textContent=(stage+1)+' / '+levels.length;const l=levels[stage];$('objectiveLabel').textContent=l.boss&&bossSpawned?'JEFE / LLAVE':'ZOMBIS';$('objective').textContent=`${Math.min(deadCount,l.goal)} / ${l.goal}`;$('bossbar').style.display=boss&&boss.hp>0?'block':'none';if(boss)$('bossfill').style.width=clamp(100*boss.hp/boss.maxHp,0,100)+'%'}
+function startLevel(n){stage=n;const level=levels[stage];player={x:110,y:356,r:16,hp:10,maxHp:10,gun:0,cool:0,dir:1,walk:0,inv:0,dmgBlocked:0};boss=null;dogs=[];shots=[];enemyShots=[];drops=[];sparks=[];texts=[];cam=0;t=0;stageTime=0;spawnTimer=38;deadCount=0;bossSpawned=false;hasKey=false;capsuleOpened=false;portalActivated=false;phase='playing';closeModal(true);resetInputs();updateHud();announce(`NIVEL ${stage+1} — ${level.name.toUpperCase()} ➜`,190)}
+function closeModal(force=false){if(!force&&phase!=='playing'){openModal(phase);return}menu=null;modal.classList.add('hidden');resetInputs()}
+function openModal(name){menu=name;modal.classList.remove('hidden');resetInputs();renderModal()}
+function btn(action,text,cls=''){return `<button type="button" class="pixelbtn ${cls}" data-action="${action}">${text}</button>`}
+function backButton(){return btn('back','← VOLVER')}
+function miniCanvas(id){return `<canvas class="pixel-icon" width="60" height="60" data-sprite="${id}" aria-hidden="true"></canvas>`}
+function renderModal(){if(!menu)return;let html='';const again=phase==='intro'?'intro':phase==='dead'?'dead':phase==='interlude'?'interlude':phase==='capsule'?'capsule':phase==='win'?'win':'pause';
+ if(menu==='intro') html=`<h2 id="modalHeading">🐱 GATO BLÁSTER: LA LLAVE SECRETA</h2><p>Avanza <b>hacia la derecha</b> por <b>5 niveles</b> de cuevas y derrota a los perros zombis. Sueltan principalmente <b>monedas</b>; algunas veces, armas o corazones.</p><p>En el nivel 4 te espera un jefe mucho más fuerte. Al vencerlo, recoge la <b>llave</b>, abre la puerta y entra en la <b>cápsula del Among Us rojo</b>. ¡Su poder de rapidez puede equiparse o quitarse desde el inventario!</p><div class="info">Si mueres con un Among Us equipado, lo pierdes. Puedes recuperarlo gastando monedas. Las skins y monedas se conservan.</div><div class="buttons">${btn('start','▶ EMPEZAR AVENTURA','gold')}${btn('inventory','🎒 INVENTARIO')}${btn('shop','🎭 SKINS')}</div>`;
+ else if(menu==='pause')html=`<h2 id="modalHeading">Ⅱ JUEGO EN PAUSA</h2><p>Nivel ${stage+1}: <b>${levels[stage].name}</b> · Monedas: <b>${save.coins}</b></p><p>Cambia de skin o equipa un Among Us en cualquier momento.</p><div class="buttons">${btn('resume','▶ CONTINUAR','gold')}${btn('inventory','🎒 INVENTARIO')}${btn('shop','🎭 SKINS')}${btn('restart','↺ REINICIAR NIVEL','red')}</div>`;
+ else if(menu==='dead')html=`<h2 id="modalHeading">💀 LOS ZOMBIS TE ATRAPARON</h2><p>Perdiste en el nivel ${stage+1}. <b>Conservas tus ${save.coins} monedas y tus skins.</b></p><p class="warning">${deathMessage}</p><div class="buttons">${btn('retry','↺ REINTENTAR NIVEL','gold')}${btn('inventory','🎒 RECUPERAR AMONG US')}${btn('shop','🎭 SKINS')}</div>`;
+ else if(menu==='interlude')html=`<h2 id="modalHeading">★ NIVEL ${stage+1} SUPERADO ★</h2><p>¡Excelente! Sobreviviste a <b>${levels[stage].name}</b>.</p><p>Te esperan perros zombis distintos y más tesoros en la siguiente zona.</p><div class="buttons">${btn('next','▶ NIVEL '+(stage+2),'gold')}${btn('inventory','🎒 INVENTARIO')}${btn('shop','🎭 SKINS')}</div>`;
+ else if(menu==='capsule')html=`<h2 id="modalHeading">🔑 ¡ABRISTE LA CÁPSULA!</h2><p>¡El rey de los perros zombis soltó su llave dorada! Abriste la puerta secreta y liberaste un <b>AMONG US ROJO</b>.</p><p>Su poder: <b>RAPIDEZ +55%</b>. Puedes equiparlo o quitarlo cuando quieras en el inventario. Si mueres mientras lo llevas equipado, lo perderás y tendrás que recuperarlo con monedas.</p><div class="buttons">${btn('equip-red','⚡ EQUIPAR AMONG US','green')}${btn('inventory','🎒 VER INVENTARIO')}${btn('next','▶ NIVEL 5: LA HUIDA','gold')}</div>`;
+ else if(menu==='win')html=`<h2 id="modalHeading">🏆 ¡GANASTE LA AVENTURA!</h2><p>Superaste los <b>5 niveles</b>, venciste al rey zombi y descubriste la cápsula secreta.</p><p>¡Puedes repetir la aventura con tus skins, monedas y Among Us desbloqueados!</p><div class="buttons">${btn('newgame','↺ NUEVA PARTIDA +','gold')}${btn('inventory','🎒 INVENTARIO')}${btn('shop','🎭 SKINS')}</div>`;
+ else if(menu==='inventory'){
+ html=`<h2 id="modalHeading">🎒 INVENTARIO DE AMONG US</h2><p>Equipa uno para obtener su poder. Puedes cambiarlo cuando quieras.</p><div class="coin-strip">🪙 TUS MONEDAS: ${save.coins}</div><div class="cards">`;
+ for(const p of pets){const status=save.pets[p.id];const equipped=save.equipped===p.id;let action='',caption='',className='';if(equipped){action=`unequip-${p.id}`;caption='✓ EQUIPADO · QUITAR';className='green'}else if(status==='owned'){action=`equip-${p.id}`;caption='EQUIPAR';className='green'}else if(status==='lost'){action=`recover-${p.id}`;caption=`RECUPERAR · 🪙 ${p.recover}`;className='gold'}else if(p.price){action=`buyPet-${p.id}`;caption=`COMPRAR · 🪙 ${p.price}`;className='gold'}else{caption='🔒 EN LA CÁPSULA DEL JEFE'}html+=`<article class="shop-card ${equipped?'selected':''}">${miniCanvas('pet-'+p.id)}<h3>${p.name}</h3><p>${p.desc}</p>${action?btn(action,caption,className):`<div class="muted" style="font-size:11px;text-align:center">${caption}</div>`}</article>`}
+ html+=`</div><div class="info">⚠️ Si mueres mientras llevas un Among Us equipado, lo pierdes. Si lo guardas sin equipar, no se pierde.</div><div class="buttons">${backButton()}</div>`;
+ }
+ else if(menu==='shop'){
+ html=`<h2 id="modalHeading">🎭 TIENDA DE SKINS</h2><p>Compra personajes con <b>monedas del juego</b> y cambia de apariencia cuando quieras. No se pierden al morir.</p><div class="coin-strip">🪙 TUS MONEDAS: ${save.coins}</div><div class="cards">`;
+ for(const s of allSkins){const owned=save.skins.includes(s.id),active=save.skin===s.id;let caption=active?'✓ EQUIPADA':owned?'EQUIPAR':`COMPRAR · 🪙 ${s.price}`;let action=active?'':owned?`skin-${s.id}`:`buySkin-${s.id}`;html+=`<article class="shop-card ${active?'selected':''}">${miniCanvas('skin-'+s.id)}<h3>${s.name}</h3><p>${s.desc}</p>${action?btn(action,caption,owned?'green':'gold'):`<div class="muted" style="font-size:11px">${caption}</div>`}</article>`}
+ html+=`</div><div class="buttons">${backButton()}</div>`;
+ }
+ panel.innerHTML=html;panel.scrollTop=0;
+ panel.querySelectorAll('[data-sprite]').forEach(c=>{const id=c.dataset.sprite,mini=c.getContext('2d');mini.imageSmoothingEnabled=false;mini.fillStyle='#12212b';mini.fillRect(0,0,60,60);for(let k=0;k<7;k++){mini.fillStyle='#28404a';mini.fillRect((k*19)%60,(k*17)%60,3,2)}if(id.startsWith('skin-'))drawSkin(mini,id.slice(5),30,54,3,1,0);else drawAmong(mini,id.slice(4),30,31,3.1)})
+ }
+let deathMessage='';
+function moneyCheck(amount){if(save.coins<amount){announce(`¡NECESITAS ${amount-save.coins} MONEDAS MÁS!`,130);return false}save.coins-=amount;return true}
+panel.addEventListener('click',e=>{const button=e.target.closest('[data-action]');if(!button)return;const a=button.dataset.action;
+ if(a==='start'||a==='newgame')return startLevel(0);
+ if(a==='retry'||a==='restart')return startLevel(stage);
+ if(a==='next')return startLevel(stage+1);
+ if(a==='resume')return closeModal(true);
+ if(a==='back')return phase==='playing'?closeModal(true):openModal(phase);
+ if(a==='inventory'||a==='shop')return openModal(a);
+ if(a==='equip-red'){if(save.pets.red==='owned'){save.equipped='red';persist();updateHud();announce('⚡ AMONG US ROJO EQUIPADO',125);renderModal()}return}
+ if(a.startsWith('unequip-')){const id=a.slice(8);if(save.equipped===id){save.equipped=null;persist();renderModal()}return}
+ if(a.startsWith('equip-')){const id=a.slice(6);if(save.pets[id]==='owned'){save.equipped=id;persist();renderModal()}return}
+ if(a.startsWith('recover-')){const id=a.slice(8),p=pets.find(q=>q.id===id);if(p&&save.pets[id]==='lost'&&moneyCheck(p.recover)){save.pets[id]='owned';persist();updateHud();renderModal()}return}
+ if(a.startsWith('buyPet-')){const id=a.slice(7),p=pets.find(q=>q.id===id);if(p&&p.price&&save.pets[id]==='locked'&&moneyCheck(p.price)){save.pets[id]='owned';persist();updateHud();renderModal()}return}
+ if(a.startsWith('buySkin-')){const id=a.slice(8),s=allSkins.find(q=>q.id===id);if(s&&!save.skins.includes(id)&&moneyCheck(s.price)){save.skins.push(id);save.skin=id;persist();updateHud();renderModal()}return}
+ if(a.startsWith('skin-')){const id=a.slice(5);if(save.skins.includes(id)){save.skin=id;persist();renderModal()}return}
+});
+$('invBtn').addEventListener('click',()=>openModal('inventory'));
+$('shopBtn').addEventListener('click',()=>openModal('shop'));
+$('pauseBtn').addEventListener('click',()=>phase==='playing'&&menu==='pause'?closeModal(true):openModal(phase==='playing'?'pause':phase));
+function popText(x,y,text,color='#fff0a1'){texts.push({x,y,t:text,c:color,life:70})}
+function burst(x,y,color,n=18){for(let i=0;i<n;i++)sparks.push({x,y,vx:rnd(-4,4),vy:rnd(-4,4),life:rnd(20,49),color,size:rnd(2,5)})}
+function drop(x,y,type,amount=1){drops.push({x,y,type,amount,life:1200,bob:rnd(0,10),vx:0,vy:0})}
+function spawnDog(){const l=levels[stage];const kind=stage===0?(Math.random()<.16?'runner':'basic'):stage===1?(Math.random()<.38?'runner':'basic'):Math.random()<.22?'brute':Math.random()<.40?'runner':'basic';const hp=(kind==='brute'?66:kind==='runner'?23:33)+stage*5;const maxAhead=l.boss?l.length-740:l.length-230;let x=clamp(player.x+rnd(270,510),Math.min(player.x+115,maxAhead),maxAhead);if(x<player.x+85)x=player.x+120;dogs.push({x,y:rnd(TOP+10,BASE-6),type:kind,hp,maxHp:hp,r:kind==='brute'?25:kind==='runner'?13:18,speed:kind==='brute'?0.55:kind==='runner'?1.6:0.93,hit:0,step:rnd(0,8),attack:0})}
+function spawnBoss(){const l=levels[stage];bossSpawned=true;boss={x:l.length-530,y:348,hp:480,maxHp:480,r:49,hit:0,attack:100,charge:0,telegraph:0,step:0,mode:'move'};dogs.length=0;shots.length=0;enemyShots.length=0;announce('☠ ¡REY DE LOS PERROS! 480 DE VIDA ☠',220);updateHud()}
+function killDog(d){const i=dogs.indexOf(d);if(i>=0)dogs.splice(i,1);deadCount++;burst(d.x,d.y-19,d.type==='brute'?'#b7a2ca':'#8dbe91',20);if(Math.random()<.86)drop(d.x+rnd(-8,8),d.y,'coin',Math.round(rnd(3,7)));if(Math.random()<.13){const tier=clamp(1+Math.floor(Math.random()*(Math.min(stage+1,3))),1,3);drop(d.x+17,d.y-4,'weapon',tier)}if(Math.random()<.13)drop(d.x-14,d.y,'heal');if(deadCount===levels[stage].goal){announce(stage===3?'¡AHORA BUSCA AL REY DE LOS ZOMBIS!':'¡SUFICIENTES ZOMBIS! CORRE A LA PUERTA ➜',190)}updateHud()}
+function killBoss(){const b=boss;if(!b)return;burst(b.x,b.y-36,'#d5a46d',80);drop(b.x,b.y-15,'key');for(let i=0;i<9;i++)drop(b.x+rnd(-95,100),b.y+rnd(-58,45),'coin',6);drop(b.x-40,b.y-20,'heal');addCoins(45);boss=null;enemyShots.length=0;announce('🔑 ¡EL JEFE SOLTÓ UNA LLAVE! RECÓGELA',240);updateHud()}
+function takeDamage(n,sourceX){if(player.inv>0||phase!=='playing')return;player.dmgBlocked++;if(save.equipped==='blue'&&player.dmgBlocked%3===0){popText(player.x,player.y-55,'¡ESCUDO!', '#75ceff');player.inv=46;return}player.hp=Math.max(0,player.hp-n);player.inv=78;screenShake=Math.max(screenShake,8);burst(player.x,player.y-20,'#ff9196',14);player.x=clamp(player.x+(sourceX>player.x?-24:24),28,levels[stage].length-65);updateHud();if(player.hp<=0){phase='dead';let lost='';if(save.equipped&&save.pets[save.equipped]==='owned'){const p=pets.find(p=>p.id===save.equipped);save.pets[save.equipped]='lost';save.equipped=null;persist();lost=`Tu ${p.name} estaba equipado: ¡lo perdiste! Puedes recuperarlo por ${p.recover} monedas en el inventario.`}else lost='No llevabas ningún Among Us equipado, así que no perdiste ninguno.';deathMessage=lost;openModal('dead')}}
+function shoot(){if(player.cool>0)return;const g=guns[player.gun];player.cool=g.rate;let target=null,best=Infinity;for(const d of dogs){const di=Math.hypot(d.x-player.x,d.y-player.y);if(di<620&&di<best){best=di;target=d}}if(boss){const di=dist(player,boss);if(di<640&&(di<best||!target)){best=di;target=boss}}let ang;if(target)ang=Math.atan2((target.y-(target===boss?53:18))-(player.y-20),target.x-(player.x+player.dir*8));else if(aimMouse&&fireMouse)ang=Math.atan2(mouse.y-(player.y-20),mouse.x+cam-player.x);else ang=player.dir===1?0:Math.PI;
+ player.dir=Math.cos(ang)>=0?1:-1;
+ for(let j=0;j<g.pellets;j++){const offset=(j-(g.pellets-1)/2)*g.spread+rnd(-g.spread*.22,g.spread*.22);const a=ang+offset;shots.push({x:player.x+Math.cos(a)*15,y:player.y-20+Math.sin(a)*9,vx:Math.cos(a)*g.spd,vy:Math.sin(a)*g.spd,r:g.r,damage:g.damage,life:65,pierce:g.pierce||0,hit:new Set(),color:g.color})}
+ burst(player.x+player.dir*26,player.y-22,g.color,4);
+}
+function update(){t++;stageTime++;const l=levels[stage];if(toastTime>0&&--toastTime===0)$('notice').classList.remove('visible');if(screenShake>0)screenShake*=.85;if(screenShake<.4)screenShake=0;
+ const mx=clamp((keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joy.x,-1,1),my=clamp((keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0)+joy.y,-1,1);const mag=Math.hypot(mx,my),speed=save.equipped==='red'?4.55:2.93;
+ if(mag>.09){player.x+=mx/mag*speed;player.y+=my/mag*speed*.78;player.walk+=.23;if(Math.abs(mx)>.13)player.dir=mx>0?1:-1}player.x=clamp(player.x,31,l.length-70);player.y=clamp(player.y,TOP+8,BASE);
+ const gateX=l.boss?l.length-295:l.length-155;if((!l.boss&&deadCount<l.goal)||(l.boss&&!hasKey))player.x=Math.min(player.x,gateX-31);
+ if(player.cool>0)player.cool--;if(player.inv>0)player.inv--;if(fireTouch||fireMouse||keys.has('j')||keys.has('k')||keys.has(' '))shoot();
+ // Dogs appear ahead of the hero, allowing travel to the right.
+ if(!bossSpawned&&deadCount<l.goal){spawnTimer--;if(spawnTimer<=0&&dogs.length<l.maxDogs){spawnDog();spawnTimer=Math.max(42,115-stage*13)+rnd(0,24)}}
+ if(l.boss&&!bossSpawned&&deadCount>=l.goal&&player.x>=l.length-1150)spawnBoss();
+ for(const d of dogs){if(d.hit>0)d.hit--;d.step+=.16;const dx=player.x-d.x,dy=player.y-d.y,dis=Math.hypot(dx,dy);if(dis>2&&dis<760){d.x+=dx/dis*d.speed;d.y+=dy/dis*d.speed*.78}if(d.attack>0)d.attack--;if(dis<d.r+player.r+2&&d.attack<=0){takeDamage(d.type==='brute'?2:1,d.x);d.attack=68;if(phase!=='playing')return}}
+ if(boss){if(boss.hit>0)boss.hit--;boss.step+=.13;if(boss.attack>0)boss.attack--;const dx=player.x-boss.x,dy=player.y-boss.y,d=Math.hypot(dx,dy);if(boss.mode==='telegraph'){boss.telegraph--;if(boss.telegraph<=0){boss.mode='move';const ang=Math.atan2((player.y-18)-(boss.y-43),dx);for(let j=-2;j<=2;j++){const a=ang+j*.24;enemyShots.push({x:boss.x+Math.cos(a)*32,y:boss.y-43+Math.sin(a)*14,vx:Math.cos(a)*4.8,vy:Math.sin(a)*4.8,r:8,life:112})}burst(boss.x,boss.y-43,'#90e6a2',18);boss.attack=120}}else{if(d>67&&d<850){boss.x+=dx/d*1.05;boss.y+=dy/d*.75}if(boss.attack<=0){boss.mode='telegraph';boss.telegraph=45;boss.attack=200;announce('⚠ ¡EL JEFE PREPARA UN ATAQUE!',70)}}if(d<boss.r+player.r+7&&t%17===0)takeDamage(2,boss.x)}
+ // Travel through the side-scrolling level with projectiles in world coordinates.
+ for(let i=shots.length-1;i>=0;i--){const p=shots[i];p.x+=p.vx;p.y+=p.vy;p.life--;let hit=false;for(const d of dogs){if(p.hit.has(d))continue;if(Math.hypot(p.x-d.x,p.y-(d.y-18))<d.r+p.r+4){p.hit.add(d);d.hp-=p.damage;d.hit=5;burst(p.x,p.y,'#afffe0',3);if(d.hp<=0)killDog(d);hit=true;break}}if(!hit&&boss&&Math.hypot(p.x-boss.x,p.y-(boss.y-43))<boss.r+p.r){if(!p.hit.has(boss)){p.hit.add(boss);boss.hp-=p.damage;boss.hit=5;burst(p.x,p.y,'#fff0a2',5);screenShake=Math.max(screenShake,2);if(boss.hp<=0)killBoss();updateHud();hit=true}}if(hit){if(p.pierce>0)p.pierce--;else{shots.splice(i,1);continue}}if(p.life<=0||p.x<0||p.x>l.length+60||p.y<100||p.y>H+35)shots.splice(i,1)}
+ for(let i=enemyShots.length-1;i>=0;i--){const b=enemyShots[i];b.x+=b.vx;b.y+=b.vy;b.life--;if(Math.hypot(b.x-player.x,b.y-(player.y-18))<b.r+player.r){enemyShots.splice(i,1);takeDamage(2,b.x);if(phase!=='playing')return;continue}if(b.life<=0||b.y>H+100)enemyShots.splice(i,1)}
+ for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.bob+=.09;d.life--;let distance=dist(d,player);if(d.type==='coin'&&distance<142&&distance>12){d.x+=(player.x-d.x)/distance*5.7;d.y+=(player.y-d.y)/distance*5.7;distance=dist(d,player)}if(distance<28){if(d.type==='coin'){addCoins(d.amount);popText(d.x,d.y-20,`+${save.equipped==='yellow'?Math.ceil(d.amount*1.5):d.amount} 🪙`,'#ffe49b')}else if(d.type==='heal'){player.hp=Math.min(player.maxHp,player.hp+3);announce('♥ +3 CORAZONES',90)}else if(d.type==='weapon'){if(d.amount>player.gun){player.gun=d.amount;announce(`🔫 ¡${guns[player.gun].name} CONSEGUIDA!`,145)}else{addCoins(8);popText(d.x,d.y-22,'+8 🪙','#ffe49b')}}else if(d.type==='key'){hasKey=true;announce('🔑 ¡TIENES LA LLAVE! VE A LA PUERTA ➜',180)}burst(d.x,d.y-14,d.type==='key'?'#ffe18c':'#87eec8',14);drops.splice(i,1);updateHud();continue}if(d.life<=0&&d.type!=='key')drops.splice(i,1)}
+ // A key opens the vault door; the capsule awards the speed Among Us.
+ if(l.boss&&hasKey&&player.x>=gateX-54&&!portalActivated){portalActivated=true;announce('🔓 ¡LA PUERTA SE HA ABIERTO!',160)}
+ if(l.boss&&portalActivated&&player.x>=l.length-110){if(save.pets.red!=='owned'){save.pets.red='owned';persist()}phase='capsule';openModal('capsule');return}
+ if(!l.boss&&deadCount>=l.goal&&player.x>=gateX-17){phase=stage===levels.length-1?'win':'interlude';openModal(phase);return}
+ for(let i=sparks.length-1;i>=0;i--){const p=sparks[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.09;p.vx*=.97;p.life--;if(p.life<=0)sparks.splice(i,1)}
+ for(let i=texts.length-1;i>=0;i--){const p=texts[i];p.y-=.55;p.life--;if(p.life<=0)texts.splice(i,1)}
+ cam+=(clamp(player.x-210,0,l.length-W)-cam)*.12;cam=clamp(cam,0,l.length-W);
+}
+function drawAmong(c,id,x,y,scale=1){const color=pets.find(p=>p.id===id)?.color||'#e86173',dark=id==='blue'?'#34759c':id==='yellow'?'#b78f32':'#9c3b4e';c.save();c.translate(Math.round(x),Math.round(y));c.scale(scale,scale);function q(x,y,w,h,v){c.fillStyle=v;c.fillRect(x,y,w,h)}q(-8,-7,17,17,dark);q(-6,-9,13,17,color);q(-7,3,5,5,dark);q(3,3,5,5,dark);q(-8,-2,4,7,dark);q(-5,-5,13,6,'#c6f7ff');q(-4,-5,8,4,'#8dc9ed');q(-5,-8,5,2,'#ffdede');c.restore()}
+function drawSkin(c,id,x,y,scale=1,face=1,walk=0){c.save();c.translate(Math.round(x),Math.round(y));c.scale(scale*face,scale);function p(a,b,w,h,color){c.fillStyle=color;c.fillRect(a,b,w,h)}
+ const wob=Math.round(Math.sin(walk)*1.25);
+ p(-8,-2,19,3,'#0b141a');
+ if(id==='cat'){
+ p(-14,-15,5,10,'#b97f4d');p(-17,-18,6,5,'#e5b878');p(-7,-13,14,12,'#dfad72');p(-7,-5,5,6,'#9a6748');p(3,-5,5,6,'#9a6748');p(-9,-29,7,10,'#e3ac72');p(4,-29,7,10,'#e3ac72');p(-7,-27,3,5,'#f3b1ab');p(6,-27,3,5,'#f3b1ab');p(-11,-25,24,18,'#f8d093');p(-11,-23,24,5,'#e2a868');p(-7,-18,4,4,'#304b47');p(6,-18,4,4,'#304b47');p(1,-13,3,3,'#d88483');p(-6,-9,5,2,'#ffebba');p(7,-9,5,2,'#ffebba');
+ }else if(id==='miku'){
+ p(-18,-27,9,25,'#1ab9b7');p(12,-27,9,25,'#25c5bf');p(-18,-27,10,5,'#46fff1');p(12,-27,10,5,'#69ecec');p(-9,-14,20,14,'#28333b');p(-6,-13,4,11,'#b9d4d8');p(7,-13,4,11,'#b9d4d8');p(0,-10,4,11,'#36edd2');p(-7,-7,5,7,'#324c5b');p(6,-7,5,7,'#324c5b');p(-11,-29,24,17,'#f7c8a9');p(-11,-34,24,9,'#2dafa9');p(-11,-31,9,13,'#2dbdb8');p(8,-31,6,13,'#2fc5c2');p(-5,-20,3,3,'#34475b');p(6,-20,3,3,'#34475b');
+ }else if(id==='bruno'){
+ p(-8,-13,19,12,'#e3b640');p(-8,-4,6,6,'#1e2632');p(5,-4,6,6,'#1e2632');p(-11,-28,24,18,'#bb855e');p(-11,-31,24,7,'#181a24');p(-13,-32,29,5,'#28212b');p(-11,-35,22,6,'#bd302c');p(-9,-22,8,4,'#11141e');p(4,-22,8,4,'#11141e');p(-1,-22,5,2,'#11141e');p(-7,-12,15,3,'#fff1ac');p(3,-9,4,6,'#f3e3ba');
+ }else if(id==='jax'){
+ p(-10,-15,22,13,'#8c70cc');p(-6,-4,7,5,'#51477c');p(5,-4,7,5,'#51477c');p(-9,-29,6,14,'#9c7fdb');p(5,-32,6,17,'#9c7fdb');p(-7,-27,3,8,'#d0aee7');p(7,-29,3,9,'#d0aee7');p(-12,-24,26,18,'#af8ee2');p(-8,-18,4,4,'#ffdd6d');p(7,-18,4,4,'#ffdd6d');p(-6,-11,17,5,'#f9f0dd');for(let i=0;i<4;i++)p(-3+i*4,-11,1,5,'#8f70c6');
+ }else if(id==='sonic'){
+ p(-9,-15,19,14,'#3482d9');p(-10,-4,8,5,'#ef6b5d');p(6,-4,8,5,'#ef6b5d');p(-17,-27,10,8,'#2775dc');p(-17,-21,10,6,'#1b62b4');p(-12,-30,9,12,'#297cde');p(-8,-32,15,9,'#328cfc');p(-12,-25,25,17,'#338bf1');p(0,-17,14,9,'#e7b49d');p(7,-19,5,4,'#faf6e9');p(9,-19,2,4,'#1a2033');p(12,-15,4,3,'#181f30');
+ }else if(id==='teto'){
+ p(-9,-15,20,14,'#f1e5dd');p(-8,-3,7,5,'#30313d');p(5,-3,7,5,'#30313d');p(-18,-26,8,23,'#ca4456');p(12,-26,8,23,'#d95869');p(-19,-25,9,4,'#f77b82');p(12,-25,9,4,'#f77b82');p(-11,-30,24,19,'#e8bfb0');p(-11,-33,24,10,'#cf4f61');p(-11,-29,10,13,'#dc5568');p(6,-30,9,12,'#e86575');p(-6,-20,4,4,'#80545a');p(6,-20,4,4,'#80545a');p(-3,-14,8,2,'#ed6d79');
+ }else if(id==='pomni'){
+ p(-8,-15,18,14,'#d84b57');p(-8,-4,6,5,'#1d69bc');p(5,-4,6,5,'#c43347');p(-12,-30,12,13,'#2547c5');p(0,-30,13,13,'#dc3f4e');p(-16,-32,6,6,'#e6bd60');p(10,-32,6,6,'#e6bd60');p(-11,-24,23,18,'#f8d7bd');p(-8,-17,5,6,'#f6f7f6');p(5,-17,5,6,'#f6f7f6');p(-6,-15,3,4,'#3c5063');p(7,-15,3,4,'#3c5063');p(0,-11,3,3,'#e24b54');p(-8,-10,21,3,'#eee4d8');
+ }else if(id==='bacon'){
+ p(-9,-16,19,15,'#377abb');p(-8,-4,6,6,'#448752');p(5,-4,6,6,'#448752');p(-11,-28,24,17,'#e3bb8e');p(-12,-34,25,11,'#62442c');p(-10,-33,5,14,'#9b653b');p(-1,-33,4,13,'#ac7546');p(7,-33,5,13,'#a2724b');p(-6,-21,4,3,'#323f4b');p(6,-21,4,3,'#323f4b');
+ }else if(id==='amogus'){
+ p(-9,-16,22,17,'#c74352');p(-8,-6,7,8,'#ae283b');p(5,-6,7,8,'#ae283b');p(-9,-29,22,18,'#ec5866');p(-11,-24,6,10,'#ae283b');p(-7,-26,20,10,'#c3f5ff');p(-5,-26,13,8,'#80c4ee');p(9,-22,4,3,'#ebfeff');
+ }
+ // Held blaster visible across every character, pointed right.
+ p(11,-16,15,5,'#293b45');p(13,-20,11,4,'#a5d4d4');p(23,-17,6,3,'#fce6aa');p(14,-11,4,7,'#6c727e');c.restore();}
+function background(){const l=levels[stage],sky=['#141b25','#101d27','#1c1929','#261c20','#17242c'][stage];rect(0,0,W,H,sky);
+ // Cave ceiling and uneven layers are parallax-scrolled for depth.
+ const distant=Math.floor(cam*.29);for(let i=-2;i<16;i++){let x=i*84-(distant%84),h=35+Math.floor(hash(i+Math.floor(distant/84))*70);rect(x,172-h,92,165+h,'#19242c');rect(x+12,167-h,38,20,'#25323a');rect(x+35,207,25,23,'#0f1921')}
+ rect(0,0,W,118,'#090e17');rect(0,116,W,51,'#101822');rect(0,167,W,52,'#17232c');rect(0,218,W,13,'#28393c');rect(0,232,W,15,'#425051');rect(0,246,W,7,'#596262');rect(0,253,W,H-253,'#242c33');rect(0,427,W,23,'#0c151e');rect(0,421,W,6,'#404548');
+ for(let i=-2;i<20;i++){const px=i*53-(cam*.44%53),k=i+Math.floor(cam*.44/53);const spike=18+hash(k)*46;rect(px,113,24,spike,'#0d171f');rect(px+6,113,9,spike+8,'#1e2930');rect(px+3,117,4,spike-7,'#2f383d')}
+ for(let x=Math.floor(cam/64)*64-64;x<cam+W+64;x+=64){const sx=x-cam,part=Math.floor(x/64);rect(sx,262+Math.floor(hash(part*14)*4),46,3,'#303b3e');rect(sx+26,335+Math.floor(hash(part*7)*39),39,2,'#182128');rect(sx+10,403,30,2,'#344141');if(hash(part*4+31)>.52){rect(sx+11,298+hash(part*9)*83,6,3,'#4d5c57');rect(sx+18,299+hash(part*9)*83,3,2,'#171f24')}}
+ // Glowing fungi, lanterns and rock formations.
+ for(let x=Math.floor(cam/155)*155-155;x<cam+W+155;x+=155){let s=x-cam;const k=Math.floor(x/155);if(hash(k+9)<.22){const yy=310+hash(k+3)*75;glow(s+31,yy,55,'#67e4ce22');rect(s+29,yy,5,13,'#477b72');rect(s+22,yy-6,18,8,'#68c7b4');rect(s+27,yy-9,9,3,'#b4ffee')}else if(hash(k+3)>.75){glow(s+30,244,50,'#eaca7c24');rect(s+24,241,14,5,'#5b4a33');rect(s+28,227,5,15,'#9b7843');rect(s+27,221,8,8,'#f7d88d');rect(s+29,218,4,5,'#fff5bd')}else if(hash(k+6)>.59){const yy=290+hash(k+12)*110;glow(s+30,yy,55,'#7cd9f81c');rect(s+27,yy-10,9,20,'#386e7d');rect(s+30,yy-17,5,13,l.tint);rect(s+23,yy,5,7,'#527f8d')}}
+ // Rocky foreground at bottom with staggered cave ledge.
+ for(let i=Math.floor(cam/44)-1;i<Math.floor((cam+W)/44)+2;i++){let s=i*44-cam;rect(s,429+hash(i)*7,40,21,'#0e171b');rect(s+7,422+hash(i+1)*4,25,10,'#17232a')}
+ const vignette=ctx.createRadialGradient(400,330,100,400,245,570);vignette.addColorStop(0,'#00000000');vignette.addColorStop(1,'#000713ac');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
+}
+function dogSprite(d){const x=Math.round(d.x-cam),y=Math.round(d.y+Math.sin(d.step)*1.5),big=d.type==='brute',s=big?1.3:d.type==='runner'?.8:1,fur=d.hit?'#e8ffdb':big?'#807596':d.type==='runner'?'#6da38c':'#799b79';ctx.save();ctx.translate(x,y);ctx.scale(s,s);rect(-18,-2,36,4,'#0b141a');rect(9,-22,10,6,fur);rect(16,-28,6,11,'#364d45');rect(-10,-11,6,10,'#374e43');rect(5,-11,7,10,'#374e43');rect(-15,-26,28,18,fur);rect(-15,-28,22,5,'#a7bf96');rect(-18,-35,19,19,fur);rect(-18,-39,6,9,'#415b4b');rect(-8,-39,6,9,'#354c43');rect(-13,-28,4,4,'#e5fb93');rect(-3,-27,4,4,'#e5fb93');rect(-24,-23,13,8,'#496a52');rect(-25,-22,4,4,'#1a2a2d');rect(-12,-17,10,3,'#2b4043');rect(-7,-12,3,3,'#364c48');ctx.restore();}
+function bossSprite(b){const x=Math.round(b.x-cam),y=Math.round(b.y+Math.sin(b.step)*2);ctx.save();ctx.translate(x,y);const fur=b.hit?'#f5e5ae':'#657b6b';ellipse(0,-2,57,13,'#0c171b');rect(-28,-23,17,22,'#293e3a');rect(16,-23,17,22,'#293e3a');rect(-42,-76,80,54,fur);rect(25,-55,30,18,'#384e42');rect(52,-70,9,28,'#263c36');rect(-52,-105,63,62,fur);rect(-50,-125,19,32,'#304a3d');rect(-10,-128,18,35,'#304a3d');rect(-44,-88,11,9,'#f7dc92');rect(-17,-88,11,9,'#f7dc92');rect(-40,-85,4,5,'#22292d');rect(-13,-85,4,5,'#22292d');rect(-62,-66,37,23,'#819582');rect(-65,-59,14,9,'#263632');rect(-50,-43,22,4,'#f2f4b8');rect(-36,-129,26,7,'#d6af61');for(let i=0;i<4;i++)rect(-39+i*10,-141-(i===1?6:0),6,15,'#f2ce7b');rect(3,-48,33,8,'#2c3738');for(let i=0;i<4;i++)rect(9+i*7,-52,3,7,'#f4ecb9');ctx.restore();}
+function drawGate(){const l=levels[stage],gateX=(l.boss?l.length-295:l.length-155)-cam;if(gateX<-200||gateX>W+160)return;let open=l.boss?portalActivated:deadCount>=l.goal;glow(gateX,341,95,open?'#73ffd034':'#ff766822');rect(gateX-22,228,46,195,'#29323d');rect(gateX-13,241,32,177,open?'#16362d':'#514448');rect(gateX-26,221,53,14,'#6b6e67');rect(gateX-26,419,53,10,'#555c58');if(!open){for(let k=0;k<5;k++)rect(gateX-14+k*8,241,4,177,'#a3a8a0');rect(gateX-14,283,34,8,'#b2a99b');rect(gateX+10,327,6,7,'#eacd76');label(l.boss?'🔒 LLAVE':'🔒 '+Math.min(deadCount,l.goal)+'/'+l.goal,gateX,210,12)}else{glow(gateX,337,49,'#78d7a33a');label('SALIDA ➜',gateX,204,13,'#91ffe0')}}
+function drawCapsule(){const l=levels[stage];if(!l.boss)return;const x=l.length-88-cam;if(x<-110||x>W+110)return;glow(x,338,107,'#6df5ff2b');rect(x-46,289,92,133,'#273640');rect(x-37,300,74,111,'#375f67');rect(x-30,309,60,95,'#82cbd54c');rect(x-31,309,4,97,'#b6f8ef');rect(x+27,309,4,97,'#b6f8ef');rect(x-45,289,90,12,'#7bafb5');rect(x-45,408,90,11,'#7bafb5');drawAmong(ctx,'red',x,364,2.4);label('CÁPSULA SECRETA',x,272,12,'#b9fff6')}
+function drawExit(){const l=levels[stage];if(l.boss)return;const x=l.length-155-cam;if(x<-100||x>W+100)return;glow(x,331,85,deadCount>=l.goal?'#80f6c12d':'#c6615723');rect(x-20,264,43,155,'#26313b');rect(x-16,270,35,147,deadCount>=l.goal?'#3a9c85':'#695354');rect(x-10,278,23,133,deadCount>=l.goal?'#a6f7d7':'#473d42');label(deadCount>=l.goal?'SALIDA ➜':'BLOQUEADA',x,248,13)}
+function drawDrop(d){const x=Math.round(d.x-cam),y=Math.round(d.y-17+Math.sin(d.bob)*4);if(x<-35||x>W+35)return;if(d.type==='coin'){glow(x,y,28,'#ffcb6635');rect(x-8,y-9,16,19,'#946b35');rect(x-6,y-11,13,18,'#ffe17e');rect(x-3,y-8,8,12,'#fff2ae');rect(x,y-6,2,9,'#dba94c')}else if(d.type==='weapon'){glow(x,y,38,'#77e9f533');rect(x-15,y-16,30,30,'#2d5762');rect(x-12,y-13,24,24,'#73aabb');rect(x-9,y-5,20,5,'#1d3842');rect(x-4,y-10,14,5,'#e2eec7');rect(x+1,y,6,7,'#37555d');label(['','SMG','SHOT','LÁSER'][d.amount],x,y-23,11,'#b8fffa')}else if(d.type==='heal'){glow(x,y,30,'#ff6b7d2f');rect(x-11,y-14,23,25,'#bd5366');rect(x-3,y-10,7,18,'#fff4dc');rect(x-9,y-4,19,6,'#fff4dc')}else if(d.type==='key'){glow(x,y,75,'#ffe18269');rect(x-14,y-8,16,16,'#fff0a0');rect(x-12,y-6,11,12,'#d29d42');rect(x-9,y-3,6,6,'#fff3ba');rect(x+1,y-1,24,6,'#f6d36f');rect(x+17,y+3,5,11,'#d5a44b');rect(x+22,y+3,5,7,'#efd575');label('¡LLAVE!',x+9,y-25,14,'#fff1af')}}
+function draw(){ctx.save();if(screenShake>0&&phase==='playing')ctx.translate(rnd(-screenShake,screenShake)*.4,rnd(-screenShake,screenShake)*.35);background();
+ // Progress indicator beneath the cave ceiling.
+ const l=levels[stage];rect(0,252,W,3,'#111a20');rect(0,252,(player?.x||0)/l.length*W,3,'#87daba');
+ const roomObjects=[{y:342,do:drawGate}];if(l.boss)roomObjects.push({y:382,do:drawCapsule});else roomObjects.push({y:382,do:drawExit});
+ const sorted=[...dogs.map(d=>({y:d.y,do:()=>dogSprite(d)})),...(boss?[{y:boss.y,do:()=>bossSprite(boss)}]:[]),{y:player?.y||350,do:()=>{if(player){if(player.inv>0&&t%7<3)return;const x=Math.round(player.x-cam),y=Math.round(player.y+Math.sin(player.walk)*.9);glow(x,y-20,65,save.equipped==='red'?'#ff8d9230':'#e9c38a0d');drawSkin(ctx,save.skin,x,y,2.3,player.dir,player.walk);if(save.equipped)drawAmong(ctx,save.equipped,x-player.dir*24,y-43,1.2)}}}];sorted.sort((a,b)=>a.y-b.y);for(const s of sorted)s.do();
+ for(const ob of roomObjects)ob.do();for(const d of drops)drawDrop(d);
+ for(const s of shots){const x=s.x-cam,y=s.y;glow(x,y,s.r*5,s.color+'31');rect(x-s.r,y-s.r,s.r*2+5,s.r*2,s.color)}for(const s of enemyShots){const x=s.x-cam;glow(x,s.y,23,'#8aff9665');ellipse(x,s.y,s.r,s.r,'#8be697');rect(x-3,s.y-3,6,6,'#e4ffe9')}
+ for(const p of sparks)rect(p.x-cam,p.y,p.size,p.size,p.color);for(const p of texts)label(p.t,p.x-cam,p.y,14,p.c);
+ if(boss&&boss.mode==='telegraph'){glow(boss.x-cam,boss.y-39,87,'#ff44454b');label('!',boss.x-cam,boss.y-147,34,'#ffbd98')}
+ if(player&&save.equipped==='red'&&t%8<5&&phase==='playing'){rect(player.x-cam-20*player.dir,player.y-18,9,3,'#ffb9a780');rect(player.x-cam-29*player.dir,player.y-25,8,2,'#ffe9b680')}
+ ctx.restore()}
+function loop(now){if(!lastTime)lastTime=now;acc+=Math.min(80,now-lastTime);lastTime=now;let n=0;while(acc>=16.667&&n++<5){if(phase==='playing'&&!menu)update();acc-=16.667}draw();requestAnimationFrame(loop)}
+function kDown(e){const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d',' ','j','k'].includes(k)){e.preventDefault();keys.add(k)}if(e.repeat)return;if(k==='escape'){if(menu==='pause'&&phase==='playing')closeModal(true);else if(!menu)openModal(phase==='playing'?'pause':phase);else if(menu==='inventory'||menu==='shop')phase==='playing'?closeModal(true):openModal(phase)}if(k==='i')openModal('inventory');if(k==='t')openModal('shop');if(k==='enter'&&menu==='intro')startLevel(0)}
+window.addEventListener('keydown',kDown,{passive:false});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',resetInputs);
+const joyElem=$('joy'),knob=$('joyKnob'),fireBtn=$('fire');let joyPointer=null;
+function joyMove(e){const r=joyElem.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),m=Math.hypot(x,y),limit=r.width*.33,scale=m>limit?limit/m:1;const xx=x*scale,yy=y*scale;joy.x=xx/limit;joy.y=yy/limit;knob.style.transform=`translate(${xx}px,${yy}px)`}
+joyElem.addEventListener('pointerdown',e=>{e.preventDefault();joyPointer=e.pointerId;joyElem.setPointerCapture(e.pointerId);joyMove(e)},{passive:false});joyElem.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer)joyMove(e)});function joyEnd(e){if(e.pointerId===joyPointer){joyPointer=null;joy.x=joy.y=0;knob.style.transform='translate(0px,0px)'}}joyElem.addEventListener('pointerup',joyEnd);joyElem.addEventListener('pointercancel',joyEnd);
+fireBtn.addEventListener('pointerdown',e=>{e.preventDefault();fireTouch=true;fireBtn.classList.add('down');fireBtn.setPointerCapture(e.pointerId)},{passive:false});const stopFire=()=>{fireTouch=false;fireBtn.classList.remove('down')};fireBtn.addEventListener('pointerup',stopFire);fireBtn.addEventListener('pointercancel',stopFire);fireBtn.addEventListener('lostpointercapture',stopFire);
+cvs.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=cvs.getBoundingClientRect();mouse={x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};aimMouse=true});cvs.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;fireMouse=true;cvs.setPointerCapture(e.pointerId)});cvs.addEventListener('pointerup',()=>fireMouse=false);cvs.addEventListener('pointercancel',()=>fireMouse=false);cvs.addEventListener('pointerleave',()=>{aimMouse=false;fireMouse=false});cvs.addEventListener('contextmenu',e=>e.preventDefault());
+// Set up scenery behind the intro screen and ensure persistence is usable offline.
+startLevel(0);phase='intro';openModal('intro');requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
