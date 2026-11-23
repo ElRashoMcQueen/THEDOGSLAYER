@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>THE DOG SLAYER</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#03050b; --panel:#0d1018; --panel2:#161a25; --white:#f4f6fb; --muted:#a9b1c5;
+  --line:#ffffff; --accent:#9df1ff; --yellow:#ffdd7b; --red:#ff7474; --green:#5fed9b;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#000;color:var(--white);font-family:Arial,Helvetica,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+button,input{font:inherit}
+.hidden{display:none!important}
+#app{height:100%;position:relative;background:radial-gradient(circle at 50% 16%, #2b3149 0%, #111522 22%, #070a12 45%, #03050a 68%, #010203 100%);overflow:hidden}
+#app:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 85%, rgba(85,117,155,.12), transparent 38%),linear-gradient(180deg, transparent 0%, rgba(0,0,0,.15) 36%, rgba(0,0,0,.46) 100%);pointer-events:none}
+.star{position:absolute;border-radius:50%;background:rgba(214,232,255,.85);opacity:.45;pointer-events:none;animation:drift 8s infinite linear}
+@keyframes drift{0%{transform:translateY(0) scale(.7);opacity:.1}50%{opacity:.6}100%{transform:translateY(-22px) scale(1);opacity:.08}}
+@keyframes twinkle{0%,100%{opacity:.4}50%{opacity:.88}}
+.screen{position:absolute;inset:0;padding:14px;overflow:auto}
+.screen.reveal{animation:screenIn .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes screenIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.menu-wrap{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;z-index:1}
+.account-box{position:absolute;left:14px;top:18px;border:3px solid #3fe36f;background:linear-gradient(180deg,#101624,#090c15);padding:4px;width:96px;text-align:center;border-radius:12px;box-shadow:0 12px 24px rgba(0,0,0,.25),0 0 0 2px #07140b}
+.account-box .avatar{height:58px;border:2px solid #000;background:linear-gradient(180deg,#222b43,#12182a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8ce9ff;font-weight:700;letter-spacing:.08em}
+.account-box .label{font-size:13px;margin-top:4px;letter-spacing:.05em}
+.version{position:absolute;left:8px;top:4px;font-size:13px;color:#c8d0dd;letter-spacing:.04em;opacity:.88}
+.title{font-size:clamp(52px,10vw,96px);line-height:.9;text-align:center;letter-spacing:.09em;color:#fff;text-shadow:0 2px 0 #000,0 5px 0 rgba(0,0,0,.46),0 0 20px rgba(255,255,255,.06);font-family:"Segoe Print","Comic Sans MS","Trebuchet MS",Arial,sans-serif;font-weight:300;margin:0 0 14px;transform:translateY(-4px)}
+.subtitle{margin:-6px 0 18px;color:#cfd5e8;font-size:12px;letter-spacing:.32em;text-transform:uppercase;opacity:.75}
+.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(190px,280px));gap:12px;align-items:center;justify-content:center}
+.menu-btn,.panel-btn,.level-btn,.icon-btn,.card button,.code-corner button{transition:transform .18s ease, box-shadow .22s ease, background .22s ease, border-color .22s ease, filter .22s ease}
+.menu-btn{position:relative;overflow:hidden;min-height:72px;background:rgba(0,0,0,.42);border:4px solid #f8f9ff;border-radius:14px;color:#fff;box-shadow:inset 0 0 0 3px #000,0 8px 18px rgba(0,0,0,.24);font-size:clamp(24px,4vw,40px);letter-spacing:.05em;padding:10px 18px;text-transform:uppercase}
+.menu-btn.small{min-height:56px;font-size:clamp(18px,2.6vw,27px)}
+.menu-btn:hover,.menu-btn:focus-visible,.panel-btn:hover,.level-btn:hover,.icon-btn:hover,.card button:hover,.code-corner button:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 24px rgba(0,0,0,.28), 0 0 0 2px rgba(255,255,255,.1) inset}
+.menu-btn:active,.icon-btn:active,.panel-btn:active,.level-btn:active,.card button:active,.code-corner button:active{transform:translateY(2px) scale(.985)}
+.menu-btn::after,.panel-btn::after,.level-btn::after,.card button::after,.code-corner button::after{content:"";position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:18px;height:18px;background:rgba(255,255,255,.18);border-radius:999px;transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none}
+.menu-btn.fx::after,.panel-btn.fx::after,.level-btn.fx::after,.card button.fx::after,.code-corner button.fx::after{animation:ripple .45s ease-out}
+@keyframes ripple{0%{transform:translate(-50%,-50%) scale(0);opacity:.55}100%{transform:translate(-50%,-50%) scale(15);opacity:0}}
+.bottom-icons{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.icon-btn{position:relative;overflow:hidden;width:64px;height:64px;border-radius:50%;border:3px solid #595e68;background:linear-gradient(#fafcff,#b7bcc7);color:#111;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:inset 0 0 0 3px #e3e6ea,0 8px 18px rgba(0,0,0,.24)}
+.code-corner{position:absolute;right:14px;top:14px;display:flex;align-items:flex-start;gap:8px;background:rgba(8,12,22,.8);backdrop-filter:blur(6px);border:2px solid rgba(126,143,191,.8);padding:9px 11px;border-radius:14px;max-width:min(350px,72vw);box-shadow:0 14px 30px rgba(0,0,0,.24)}
+.code-corner input{flex:1;min-width:0;background:#060912;color:#fff;border:2px solid #4d587b;border-radius:10px;padding:8px 10px;text-transform:uppercase;transition:border-color .2s ease, box-shadow .2s ease}
+.code-corner input:focus{outline:none;border-color:#afc2ff;box-shadow:0 0 0 4px rgba(147,185,255,.14)}
+.code-corner button{position:relative;overflow:hidden;background:#2f3f75;color:#fff;border:2px solid #8295e3;border-radius:10px;padding:8px 12px;font-weight:bold}
+.code-corner .mini{font-size:12px;color:#d0d8ef;line-height:1.25}
+.panel{width:min(980px,100%);margin:0 auto;background:linear-gradient(180deg,#131a2c,#090d17);border:4px solid #fff;border-radius:22px;box-shadow:0 0 0 5px #000, 0 16px 34px rgba(0,0,0,.35);padding:18px 16px;animation:panelLift .34s cubic-bezier(.2,.8,.2,1)}
+@keyframes panelLift{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.panel h2{margin:0 0 10px;text-align:center;font-size:clamp(28px,5vw,48px);letter-spacing:.05em}
+.panel p.center{text-align:center;color:#ced7eb}
+.panel .topbar{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.panel-btn{position:relative;overflow:hidden;background:#1b2340;border:3px solid #bcc9ff;color:#fff;border-radius:12px;padding:10px 14px;font-weight:bold}
+.flex{display:flex;gap:14px;flex-wrap:wrap}
+.zone-card,.card,.info-box{background:#0f1421;border:3px solid #394567;border-radius:16px;padding:12px}
+.zone-card{flex:1 1 280px;min-width:260px}
+.zone-card h3{margin:0 0 6px;font-size:26px}.zone-card p{margin:4px 0 10px;color:#c9d1e5}
+.level-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.level-btn{position:relative;overflow:hidden;background:#1d2644;border:3px solid #c4d0ff;color:#fff;border-radius:14px;padding:12px 10px;text-align:left;min-height:94px}
+.level-btn.locked{filter:grayscale(1);opacity:.55;border-color:#646b86}
+.level-btn .tag{position:absolute;top:8px;right:8px;font-size:12px;padding:3px 6px;border-radius:999px;background:#33416a}
+.level-btn .name{font-size:18px;font-weight:bold}.level-btn .desc{font-size:12px;color:#d4dcf6;margin-top:6px;line-height:1.25}
+.level-btn .tiny{font-size:11px;color:#ffd57f;margin-top:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.card{text-align:center}.skin-preview{height:90px;display:flex;align-items:center;justify-content:center}
+.pixel-char{width:56px;height:80px;position:relative;image-rendering:pixelated;transform:scale(1.15)}
+.pixel-char .head,.pixel-char .body,.pixel-char .arm,.pixel-char .leg{position:absolute;background:var(--c1,#f4a95b)}
+.pixel-char .head{left:14px;top:2px;width:28px;height:22px;border:4px solid #000;border-bottom-width:3px;background:var(--c2,#f7d068)}
+.pixel-char .body{left:10px;top:22px;width:36px;height:30px;border:4px solid #000;background:var(--c1,#f4a95b)}
+.pixel-char .arm{left:4px;top:26px;width:10px;height:22px;border:4px solid #000;background:var(--c3,#a0c7ff)}
+.pixel-char .leg.l1{left:12px;top:52px;width:12px;height:24px;border:4px solid #000;border-top:none;background:var(--c4,#675b52)}
+.pixel-char .leg.l2{left:32px;top:52px;width:12px;height:24px;border:4px solid #000;border-top:none;background:var(--c4,#675b52)}
+.card h3{margin:8px 0 4px}.card p{margin:4px 0;color:#c7d1eb;font-size:13px}.coin{color:var(--yellow)}
+.card button{position:relative;overflow:hidden;width:100%;margin-top:8px;background:#25345b;border:3px solid #cdd7ff;color:#fff;border-radius:12px;padding:10px 12px;font-weight:bold}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.code-list{font-family:Consolas,monospace;background:#060912;border:2px dashed #586792;padding:10px;border-radius:12px;line-height:1.7;color:#dce6ff}
+.canvas-wrap{position:absolute;inset:0;background:#05070d}
+#gameCanvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#06080d;touch-action:none}
+.hud{position:absolute;left:0;right:0;top:0;padding:8px 10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;font-weight:bold;font-size:14px;text-shadow:0 2px 0 #000}
+.hud .box{background:#0b1020d8;border:2px solid #6a7599;border-radius:10px;padding:7px 10px}.hud .row{display:flex;gap:8px;flex-wrap:wrap}.hp{color:#ff8a8a}.gold{color:#ffdb7f}.cyan{color:#9af1ff}
+#banner{position:absolute;left:50%;transform:translateX(-50%);bottom:88px;max-width:min(90%,850px);text-align:center;background:#0b1220d7;border:2px solid #bfc9ea;border-radius:16px;padding:12px 18px;font-size:clamp(16px,2vw,28px);font-weight:bold;opacity:0;transition:opacity .2s;pointer-events:none}
+#banner.show{opacity:1}
+#bossBar{position:absolute;left:18%;right:18%;top:56px;height:24px;background:#230f17;border:3px solid #f0bbc5;border-radius:999px;box-shadow:0 0 0 3px #000;overflow:hidden;display:none}
+#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#ef5d69,#ffb16e)}
+#bossLabel{position:absolute;left:0;right:0;top:-1px;text-align:center;font-weight:bold;color:#fff;padding-top:1px;text-shadow:0 2px 0 #000;font-size:13px}
+#mobileControls{position:absolute;inset:0;pointer-events:none}
+.pad,.fire-btn,.jump-btn{position:absolute;pointer-events:auto;touch-action:none;opacity:.9}
+.pad{left:14px;bottom:14px;display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(2,56px);gap:6px}
+.pad button,.fire-btn button,.jump-btn button{width:56px;height:56px;border-radius:16px;border:3px solid #d4d8e4;background:#1a223fcc;color:#fff;font-size:26px;font-weight:bold}
+.fire-btn{right:14px;bottom:18px}.fire-btn button{width:74px;height:74px;border-radius:50%;background:#7d2c2ccc;border-color:#ffb0b0}
+.jump-btn{right:102px;bottom:38px}.jump-btn button{background:#294577cc;border-color:#afc7ff}
+.pause-bar{position:absolute;right:10px;top:10px;display:flex;gap:8px;pointer-events:auto}.pause-bar button{background:#13192a;border:2px solid #8da0d9;color:#fff;border-radius:10px;padding:8px 12px;font-weight:bold}
+@media (max-width:720px){
+  .menu-grid{grid-template-columns:1fr; width:min(84vw,310px)}
+  .title{font-size:52px}
+  .bottom-icons{gap:10px}
+  .icon-btn{width:56px;height:56px;font-size:24px}
+  .code-corner{position:static;margin:8px auto 0;max-width:95vw;width:min(95vw,420px)}
+  .menu-wrap{justify-content:flex-start;padding-top:32px;padding-bottom:18px}
+  .account-box{transform:scale(.85);transform-origin:left top}
+  #banner{bottom:130px}
+}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Remastered visual system — custom cavern styling, retained compact menu layout */
+:root{--cream:#f6efe2;--ghost:#d8e2e0;--ember:#fa665a;--mint:#88d6be;--metal:#45545b;--slate:#17222b}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;background:#070b0e}
+#app{background:#090f13}
+#menuCanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;image-rendering:pixelated;pointer-events:none;filter:brightness(.86) saturate(.86);opacity:.95}
+#mainMenu{isolation:isolate;background:#071017}
+#mainMenu:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(4,8,13,.22),rgba(5,9,14,.7) 33%,rgba(5,9,14,.8) 50%,rgba(5,9,14,.65) 66%,rgba(4,8,13,.12)),linear-gradient(0deg,rgba(4,7,10,.56),transparent 35%,rgba(4,8,13,.28))}
+#mainMenu>.menu-wrap,#mainMenu>.code-corner,#mainMenu>.account-box,#mainMenu>.version{z-index:2}
+#mainMenu>.version{font-family:Consolas,monospace;top:16px;left:20px;font-size:11px;color:#b9c6c9;letter-spacing:.14em}
+.version span{color:var(--ember)}
+.account-box{top:43px;left:20px;width:112px;border:1px solid rgba(200,225,213,.28);border-left:3px solid #6ccfa5;border-radius:8px;background:rgba(10,19,23,.84);box-shadow:0 10px 30px #0005;padding:7px}
+.account-box .avatar{font-family:Consolas,monospace;min-height:50px;color:#bdf5d9;background:rgba(46,80,76,.25);border:1px solid #37585b;border-radius:4px;font-size:12px}
+.account-box .label{font-family:Consolas,monospace;color:#a2b7b4;font-size:10px;letter-spacing:.15em}
+.menu-wrap{max-width:900px;margin:auto;animation:menuEntry .55s cubic-bezier(.2,.75,.24,1) both}
+@keyframes menuEntry{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.menu-kicker{display:flex;align-items:center;gap:9px;font:700 11px/1.2 Consolas,monospace;letter-spacing:.28em;color:#a9bdb7;margin-bottom:16px;text-shadow:0 2px 4px #000}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a4dfb9;box-shadow:0 0 12px #63d78c;animation:twinkle 2s infinite ease-in-out}
+.title{display:flex;flex-direction:column;align-items:center;gap:0;font-family:Impact,"Arial Narrow",Arial,sans-serif;font-size:clamp(60px,7.6vw,116px);font-weight:900;line-height:.87;letter-spacing:.015em;margin:0 0 14px;text-transform:uppercase;transform:none;filter:drop-shadow(0 10px 14px #0007)}
+.title span{font-weight:900;color:#f7f3e6;transform:skew(-4deg);letter-spacing:.06em;text-shadow:2px 2px #243139,5px 5px #0009}
+.title strong{display:block;font-weight:900;color:#f06f5c;letter-spacing:.085em;transform:skew(-4deg);text-shadow:2px 2px #58352e,5px 5px #0009}
+.subtitle{font:600 12px/1.3 Consolas,monospace;letter-spacing:.24em;color:#adbdbd;text-align:center;margin:1px 0 23px}
+.menu-grid{width:min(540px,100%);gap:11px;grid-template-columns:repeat(2,minmax(190px,1fr))}
+.menu-btn{background:linear-gradient(180deg,rgba(29,40,48,.94),rgba(11,19,24,.97));min-height:68px;border:2px solid rgba(215,229,218,.72);border-radius:7px;box-shadow:0 7px 0 rgba(0,0,0,.24),inset 0 1px 0 #bdebd124;font:800 clamp(22px,2.7vw,32px)/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.095em;color:#f4f4eb;text-shadow:0 2px 1px #0009;position:relative}
+.menu-btn.small{font-family:"Arial Narrow",Arial,sans-serif;letter-spacing:.1em;font-size:clamp(14px,1.65vw,19px);font-weight:850;min-height:49px}
+.menu-btn:before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:4px;background:var(--ember);opacity:0;transition:opacity .2s}
+.menu-btn:hover{background:linear-gradient(180deg,#334b52,#1a3035);border-color:#d3f9e2;box-shadow:0 8px 28px #71d1b334,inset 0 0 0 1px #afedd338;transform:translateY(-3px)}
+.menu-btn:hover:before{opacity:1}
+.menu-btn:active{transform:translateY(1px) scale(.98)}
+.bottom-icons{display:flex;gap:10px;margin-top:18px}
+.icon-btn{width:100px;height:55px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:1px solid #536b6e;background:linear-gradient(180deg,#27373c,#0d1c23);box-shadow:0 6px 15px #0006,inset 0 1px #c4e4d03d;color:#e4f1ea;padding:2px}
+.icon-btn:hover{background:linear-gradient(180deg,#364c50,#172d32);border-color:#a2e3ca;box-shadow:0 6px 22px #63d1b32b;transform:translateY(-3px) scale(1.02)}
+.icon-symbol{font-size:23px;line-height:1.1;font-family:Consolas,monospace;font-weight:900;color:#dfefe4}
+.icon-label{font:700 9px/1.2 Consolas,monospace;letter-spacing:.1em;color:#a8bbb7}
+.menu-footer{margin-top:23px;font:700 10px/1.2 Consolas,monospace;letter-spacing:.23em;color:#a4b1b0;text-align:center;opacity:.82}
+.menu-footer span{color:#f78b72;padding:0 7px}
+.code-corner{right:22px;top:17px;max-width:360px;border:1px solid #60767b;border-radius:8px;background:rgba(5,13,20,.88);box-shadow:0 12px 30px #0008;padding:9px 11px}
+.code-corner .mini{font:600 10px/1.3 Consolas,monospace;color:#b1c4bf;letter-spacing:.06em}
+.code-corner .mini b{color:#c4efe0;letter-spacing:.15em}
+.code-corner input{width:138px;border:1px solid #4b6265;border-radius:4px;font:700 11px/1.2 Consolas,monospace;letter-spacing:.03em;padding:9px 7px;background:#0d1a23}
+.code-corner button{border-radius:4px;border:1px solid #c6a58f;background:#5f3835;padding:7px 12px;font:800 12px Consolas,monospace}
+#panelScreen{background:linear-gradient(130deg,#090f14aa,#151a1e88);z-index:10;padding:clamp(10px,3vh,28px) clamp(9px,2vw,26px)}
+.panel{position:relative;width:min(1060px,100%);border:1px solid #637774;border-top:3px solid #b7ccbb;border-radius:10px;padding:21px;background:linear-gradient(145deg,rgba(29,42,48,.99),rgba(9,16,21,.99) 78%);box-shadow:0 20px 70px #000a,inset 0 1px #a4d5bf25}
+.panel h2{font:900 clamp(28px,3.7vw,50px)/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.055em;text-shadow:0 3px 8px #000; color:#f1ebd5;margin:8px 0 13px}
+.panel p.center{color:#c2cfca;max-width:830px;margin:0 auto 17px;line-height:1.6}
+.panel .topbar{padding-bottom:12px;border-bottom:1px solid #52666755;font:600 12px Consolas,monospace;color:#dce7d9}
+.panel-btn{border-radius:6px;padding:9px 15px;background:linear-gradient(180deg,#2a4248,#152b32);border:1px solid #75928f;font:700 12px/1.2 Consolas,monospace;letter-spacing:.06em;box-shadow:0 2px 10px #0003;color:#e8f6ee}
+.panel-btn:hover,.card button:hover{border-color:#e4ffe2;background:#365b5c;color:#fff}
+.zone-card,.card,.info-box{background:linear-gradient(155deg,#26363c,#15232c);border:1px solid #425960;border-radius:10px;padding:15px;box-shadow:0 10px 24px #0003}
+.zone-card{flex:1 1 270px;min-width:0}
+.zone-card h3{font:900 27px Impact,"Arial Narrow",sans-serif;letter-spacing:.045em;color:#ffe7b3;margin:3px 0 9px}
+.zone-card p{font-size:13px;min-height:52px;color:#b8c8c5}
+.level-btn{border:1px solid #587277;border-left:3px solid #79c7a8;background:linear-gradient(145deg,#243740,#14232b);border-radius:7px;min-height:106px;padding:13px 10px;box-shadow:none}
+.level-btn .name{display:block;max-width:94%;font-size:15px;font-weight:850;color:#e9f1df;line-height:1.15}
+.level-btn .desc{font-size:11px;line-height:1.4;margin-top:8px;color:#afc4c6}
+.level-btn .tiny{font-size:10px;letter-spacing:.05em;color:#99e0bd}
+.level-btn .tag{top:5px;right:5px;border-radius:4px;background:#425a5b66;color:#ffe3b1;font:700 9px Consolas,monospace;padding:3px 5px}
+.level-btn.locked{background:#121c22;border-color:#374548;filter:grayscale(.8);opacity:.54}
+.level-btn:hover:not(.locked){border-color:#a3d9c2;background:linear-gradient(150deg,#304950,#233741)}
+.card{transition:border-color .2s ease,transform .18s ease,box-shadow .2s ease}
+.card:hover{border-color:#78ac9b;transform:translateY(-3px);box-shadow:0 12px 28px #0005}
+.card h3{font:800 18px Arial,sans-serif;color:#f5eecf}
+.card button{border-radius:6px;border:1px solid #6f9392;background:#27444a;min-height:40px}
+.info-box h3{color:#fee7b5;font-size:18px}
+.cards{gap:11px}.card{padding:13px}
+.coin{color:#ffdc93}
+.code-list{border-radius:6px;border:1px dashed #69887e;background:#101e24;color:#dce7e1}
+/* Prevent stretched gameplay canvas; UI is pinned to the exact 16:9 arena */
+.canvas-wrap{position:absolute;inset:0;background:#05090b;display:flex;align-items:center;justify-content:center}
+.game-stage{position:relative;width:min(100vw,177.7778dvh);max-height:100dvh;aspect-ratio:16/9;overflow:hidden;border:1px solid #49645e;box-shadow:0 0 0 4px #081110,0 10px 60px #0009}
+#gameCanvas{width:100%;height:100%;object-fit:fill;display:block;image-rendering:pixelated}
+.hud{padding:12px 13px;gap:10px;z-index:2;font:800 clamp(10px,1.15vw,13px) Consolas,monospace;color:#f0f2dc}
+.hud .row{gap:6px}
+.hud .box{background:rgba(9,20,25,.89);border:1px solid #456361;border-radius:5px;padding:7px 9px;box-shadow:inset 0 1px #b4cfc329}
+.hud .hp{color:#ffa4a2}.hud .cyan{color:#9ce5d5}
+.hud .gold{color:#ffe29c}
+.pause-bar{right:12px;top:62px;z-index:4}
+.pause-bar button{border:1px solid #617e7b;background:#14252c;font:800 11px Consolas,monospace;border-radius:5px;color:#e7f4ec}
+#bossBar{top:91px;left:25%;right:25%;border:2px solid #e3a8a1;border-radius:3px;box-shadow:0 4px 15px #0008}
+#banner{bottom:63px;font:900 clamp(14px,2vw,25px)/1.3 Consolas,monospace;letter-spacing:.03em;background:#0b161bd9;border:1px solid #96c4b8;border-radius:6px;color:#ffe6ab;text-shadow:0 2px #000}
+#gameScreen .hud .row:last-child .box:nth-child(2){max-width:min(310px,28vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pad button,.fire-btn button,.jump-btn button{font:900 25px Consolas,monospace;border:2px solid #8dadab;border-radius:10px;background:#10262ecf;box-shadow:0 5px 17px #0009;color:#f6f5e9}
+.fire-btn button{background:#a34236dd;border-color:#ffa888;font-size:30px}
+.jump-btn button{background:#28525acc;border-color:#a1c8cb}
+@media(max-width:720px){
+ .menu-wrap{justify-content:center;padding-top:75px;min-height:100%}
+ .title{font-size:clamp(50px,13vw,72px);margin-bottom:8px}
+ .menu-kicker{font-size:9px;margin-bottom:10px}
+ .subtitle{font-size:9px;letter-spacing:.16em;margin:0 0 15px}
+ .menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));width:min(90vw,440px);gap:7px}
+ .menu-btn{min-height:55px;font-size:22px;padding:8px 4px}
+ .menu-btn.small{min-height:43px;font-size:13px}
+ .code-corner{position:absolute;top:12px;right:10px;width:205px;max-width:60vw;margin:0;padding:5px;gap:4px}
+ .code-corner .mini{display:none}
+ .code-corner input{min-width:0;width:120px;padding:6px;font-size:10px}
+ .code-corner button{padding:6px 8px}
+ .account-box{top:15px;left:10px;transform:scale(.82);transform-origin:left top}
+ .version{display:none}
+ .bottom-icons{gap:6px;margin-top:11px}
+ .icon-btn{width:70px;height:49px;padding:2px}
+ .icon-symbol{font-size:20px}.icon-label{font-size:8px}
+ .menu-footer{font-size:8px;letter-spacing:.08em;margin-top:13px}
+ .panel{padding:12px}.zone-card{flex-basis:100%}
+ .hud{font-size:8px;gap:3px;padding:4px}
+ .hud .box{padding:4px 5px}.hud .row{gap:2px}
+ .hud .row:last-child .box:nth-child(1){display:none}
+ .pause-bar{top:34px;right:5px}.pause-bar button{font-size:9px;padding:5px}
+ .pad{left:6px;bottom:4px;gap:4px;grid-template-columns:repeat(3,43px);grid-template-rows:repeat(2,43px)}
+ .pad button,.jump-btn button{width:43px;height:43px;font-size:22px}
+ .fire-btn{right:6px;bottom:8px}.fire-btn button{width:62px;height:62px;font-size:25px}
+ .jump-btn{right:76px;bottom:17px}
+ #bossBar{top:62px}
+ #banner{bottom:100px;font-size:12px}
+}
+@media(max-height:540px){.menu-wrap{padding-top:10px}.title{font-size:clamp(39px,9vh,78px)}.menu-kicker{margin-bottom:5px}.subtitle{margin:0 0 12px}.menu-btn{min-height:47px}.menu-btn.small{min-height:39px}.bottom-icons{margin-top:9px}.icon-btn{height:43px}.menu-footer{margin-top:10px}}
+
+@media (orientation:portrait) and (pointer:coarse){
+ .game-stage{width:min(100dvh, 177.7778vw);max-width:none;max-height:none;height:auto;aspect-ratio:16/9;flex-shrink:0;transform:rotate(90deg)}
+}
+/* Animated light sweep as the player changes menus */
+#screenWipe{position:absolute;inset:-20% -40%;pointer-events:none;z-index:25;opacity:0;transform:translateX(-120%) skewX(-18deg);background:linear-gradient(90deg,transparent 0%,#1b3137b5 38%,#62918480 50%,#1b3137b5 65%,transparent 100%)}
+#screenWipe.play{animation:screenSweep .48s cubic-bezier(.22,.75,.3,1) both}
+@keyframes screenSweep{0%{transform:translateX(-130%) skewX(-18deg);opacity:0}20%{opacity:.75}65%{opacity:.85}100%{transform:translateX(130%) skewX(-18deg);opacity:0}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="mainMenu" class="screen"><canvas id="menuCanvas" width="960" height="540" aria-hidden="true"></canvas>
+    <div class="version">VER. 2.1 <span>•</span> PIXEL EDITION</div>
+    <div class="account-box">
+      <div class="avatar" id="accountAvatar">GATO</div>
+      <div class="label">PERFIL</div>
+    </div>
+    <div class="code-corner">
+      <div class="mini"><b>CÓDIGOS</b><br>RECOMPENSAS</div>
+      <input id="quickCodeInput" maxlength="14" placeholder="XXXX-XXXX-XXXX">
+      <button id="quickCodeBtn">OK</button>
+    </div>
+    <div class="menu-wrap">
+      <div class="menu-kicker"><span class="status-dot"></span> OPERATION: LAST BARK</div>
+      <h1 class="title"><span>THE DOG</span><strong>SLAYER</strong></h1>
+      <div class="subtitle">UNA AVENTURA PIXEL DE SUPERVIVENCIA</div>
+      <div class="menu-grid">
+        <button class="menu-btn" id="btnPlay">JUGAR</button>
+        <button class="menu-btn" id="btnZones">ZONAS</button>
+        <button class="menu-btn small" id="btnCodes">CÓDIGOS</button>
+        <button class="menu-btn small" id="btnHow">CÓMO JUGAR</button>
+      </div>
+      <div class="bottom-icons">
+        <button class="icon-btn" id="btnInventory" title="Inventario"><span class="icon-symbol">▣</span><span class="icon-label">MOCHILA</span></button>
+        <button class="icon-btn" id="btnSettings" title="Opciones"><span class="icon-symbol">⚙</span><span class="icon-label">AJUSTES</span></button>
+        <button class="icon-btn" id="btnSkins" title="Skins"><span class="icon-symbol">✦</span><span class="icon-label">SKINS</span></button>
+        <button class="icon-btn" id="btnShop" title="Tienda"><span class="icon-symbol">$</span><span class="icon-label">TIENDA</span></button>
+      </div>
+      <div class="menu-footer">3 ZONAS <span>·</span> 12 NIVELES <span>·</span> SALVA AL IMPOSTOR</div>
+    </div>
+  </div>
+
+  <div id="screenWipe" aria-hidden="true"></div>
+  <div id="panelScreen" class="screen hidden"></div>
+
+  <div id="gameScreen" class="canvas-wrap hidden">
+  <div class="game-stage">
+    <canvas id="gameCanvas" width="960" height="540"></canvas>
+    <div class="hud">
+      <div class="row">
+        <div class="box">❤️ <span class="hp" id="hudHp">4/4</span></div>
+        <div class="box">🪙 <span class="gold" id="hudCoins">0</span></div>
+        <div class="box">👕 <span class="cyan" id="hudSkin">Gato</span></div>
+        <div class="box">⚡ <span class="cyan" id="hudAmong">Ninguno</span></div>
+      </div>
+      <div class="row">
+        <div class="box">🌍 <span id="hudZone">Zona 1</span></div>
+        <div class="box">🎯 <span id="hudObjective">Objetivo</span></div>
+        <div class="box">🔫 <span id="hudWeapon">Pistola</span></div>
+      </div>
+    </div>
+    <div id="bossBar"><div id="bossFill"></div><div id="bossLabel">JEFE</div></div>
+    <div id="banner"></div>
+    <div class="pause-bar"><button id="pauseBtn">PAUSA</button><button id="exitBtn">SALIR</button></div>
+    <div id="mobileControls" class="hidden">
+      <div class="pad">
+        <button data-key="ArrowLeft">◀</button>
+        <button data-key="ArrowUp">▲</button>
+        <button data-key="ArrowRight">▶</button>
+        <button data-key="KeyA">◀</button>
+        <button data-key="ArrowDown">▼</button>
+        <button data-key="KeyD">▶</button>
+      </div>
+      <div class="jump-btn"><button data-key="Space">⤒</button></div>
+      <div class="fire-btn"><button data-key="Fire">🔥</button></div>
+    </div>
+  </div>
+  </div>
+</div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s), panel=$('#panelScreen'), mainMenu=$('#mainMenu'), gameScreen=$('#gameScreen');
+const canvas=$('#gameCanvas'), ctx=canvas.getContext('2d');
+const isMobile = matchMedia('(pointer:coarse)').matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
+if(isMobile) $('#mobileControls').classList.remove('hidden');
+
+const skins=[
+  {id:'cat', name:'Gato original', price:0, desc:'El gatito clásico.', colors:['#ffb45c','#ffd46d','#7bc6ff','#6f635d']},
+  {id:'miku', name:'Miku', price:120, desc:'Coletas turquesa y energía.', colors:['#5fd4d7','#9ef3ff','#35343d','#2ea8ae']},
+  {id:'bruno', name:'Bruno 24K', price:140, desc:'Brillo dorado y estilo 24K.', colors:['#d7a45a','#ffeb89','#8c2c2c','#4e4034']},
+  {id:'jax', name:'Jax', price:150, desc:'Rebelde y morado.', colors:['#9c71ff','#d6b8ff','#404050','#6651b8']},
+  {id:'sonic', name:'Sonic', price:160, desc:'Azul rapidísimo.', colors:['#3f7dff','#8fc0ff','#f4d56c','#cb4040']},
+  {id:'teto', name:'Teto', price:140, desc:'Rosa anaranjado y voz veloz.', colors:['#ff8baa','#ffd0dc','#6b4e57','#eb6f95']},
+  {id:'pomni', name:'Pomni', price:170, desc:'Circo raro y colores fuertes.', colors:['#ec4e4e','#ffe178','#4aa4ff','#332f5c']},
+  {id:'bacon', name:'Bacon', price:90, desc:'El estilo bacon/noob.', colors:['#a86747','#d1a460','#81d9a5','#6b4734']},
+  {id:'among', name:'Among Us', price:180, desc:'Rojo sospechoso.', colors:['#e84f4f','#ff9696','#96e7ff','#6b2020']},
+  {id:'spider', name:'Spiderman', price:220, desc:'Rojo y azul arácnido.', colors:['#d53030','#5f87ff','#111827','#5d1f1f']},
+  {id:'jonesy', name:'Jonesy', price:240, desc:'Fortnite style.', colors:['#ccb38b','#efe26e','#71a2ff','#6a5e43']},
+  {id:'mando', name:'El Mandaloriano', price:260, desc:'Armadura legendaria.', colors:['#8e99ac','#c7d1df','#4c5a6d','#3d3b45']},
+];
+const amongusItems={
+  speed:{id:'speed',name:'Among Us rojo', price:120, desc:'Aumenta bastante la velocidad.', type:'speed', power:'Velocidad +55%'},
+  shield:{id:'shield',name:'Among Us azul', price:150, desc:'Reduce el daño recibido.', type:'shield', power:'Daño -25%'},
+  coin:{id:'coin',name:'Among Us dorado', price:180, desc:'Consigues más monedas.', type:'coin', power:'Monedas +50%'}
+};
+const zones=[
+  {id:1, name:'Zona 1 · Minas Rotas', desc:'Túneles rotos, charcos tóxicos y murciélagos al fondo.', levels:[
+    {name:'Entrada Derruida', boss:false, length:3400, quota:18, bg:'mine', enemy:'normal'},
+    {name:'Pasillo de Hongos', boss:false, length:3800, quota:22, bg:'mushroom', enemy:'mixed'},
+    {name:'Puente Quebrado', boss:false, length:4200, quota:26, bg:'bridge', enemy:'mixed'},
+    {name:'Guarida del Mastín', boss:true, length:3000, quota:0, bg:'lair', bossName:'Mastín Zombi', bossHp:320, bossDamage:1.2}
+  ]},
+  {id:2, name:'Zona 2 · Laboratorio Hundido', desc:'Viejos tubos, jaulas y luces verdes.', levels:[
+    {name:'Galería Ácida', boss:false, length:4000, quota:28, bg:'lab', enemy:'mixed2'},
+    {name:'Jaulas de Prueba', boss:false, length:4300, quota:30, bg:'cages', enemy:'mixed2'},
+    {name:'Tuberías Locas', boss:false, length:4700, quota:34, bg:'pipes', enemy:'mixed2'},
+    {name:'Coronel Podrido', boss:true, length:3200, quota:0, bg:'bosslab', bossName:'Coronel Podrido', bossHp:420, bossDamage:1.45}
+  ]},
+  {id:3, name:'Zona 3 · Núcleo Estelar', desc:'La zona final: rocas brillantes, altares y la cápsula.', levels:[
+    {name:'Nervio de Cristal', boss:false, length:4300, quota:34, bg:'crystal', enemy:'fast'},
+    {name:'Sima del Eco', boss:false, length:4700, quota:38, bg:'echo', enemy:'fast'},
+    {name:'Altar del Núcleo', boss:false, length:5200, quota:42, bg:'altar', enemy:'fast'},
+    {name:'Jefe Final: Rey Colmillo', boss:true, length:3700, quota:0, bg:'final', bossName:'Rey Colmillo', bossHp:560, bossDamage:1.8, finalBoss:true}
+  ]}
+];
+const levelIndexToZoneLevel=(idx)=>{let c=0;for(let zi=0;zi<zones.length;zi++){for(let li=0;li<zones[zi].levels.length;li++){if(c===idx)return {zi,li,zone:zones[zi],level:zones[zi].levels[li]};c++;}} return null;};
+const totalLevels=zones.reduce((a,z)=>a+z.levels.length,0);
+
+const defaultSave=()=>({coins:0, profileName:'Invitado', admin:false, highestUnlocked:0, completedFinal:false, unlockedSkins:{cat:true}, equippedSkin:'cat', ownedAmongus:{}, equippedAmongus:null, lostAmongus:null, pendingRecover:null, masterVolume:1});
+let save=loadSave();
+function loadSave(){try{return {...defaultSave(), ...JSON.parse(localStorage.getItem('dogSlayerSave')||'{}')}}catch(e){return defaultSave();}}
+function persist(){try{localStorage.setItem('dogSlayerSave', JSON.stringify(save));}catch(e){} updateHeaderInfo();}
+function addCoins(n){save.coins=Math.max(0,save.coins+n); persist();}
+function ownsSkin(id){return !!save.unlockedSkins[id];}
+function skinById(id){return skins.find(s=>s.id===id)||skins[0];}
+function amongName(id){return id? amongusItems[id]?.name || id : 'Ninguno';}
+function updateHeaderInfo(){ $('#accountAvatar').textContent=(save.profileName||'GATO').slice(0,7).toUpperCase(); }
+updateHeaderInfo();
+
+function populateStars(){
+  [...document.querySelectorAll('.star')].forEach(e=>e.remove());
+  const host=document.getElementById('app');
+  for(let i=0;i<64;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const z=(Math.random()*3.2)+1;
+    s.style.width=s.style.height=z+'px';
+    s.style.left=Math.random()*100+'%';
+    s.style.top=(8+Math.random()*84)+'%';
+    s.style.animationDelay=(Math.random()*8)+'s';
+    s.style.animationDuration=(5+Math.random()*6)+'s';
+    s.style.opacity=0.12 + Math.random()*0.55;
+    host.appendChild(s);
+  }
+}
+populateStars();
+
+function revealScreen(el){
+  el.classList.remove('hidden');
+  el.classList.remove('reveal');
+  void el.offsetWidth;
+  el.classList.add('reveal');
+}
+function showScreen(which){
+  const wipe=document.getElementById('screenWipe');
+  wipe.classList.remove('play');void wipe.offsetWidth;wipe.classList.add('play');
+  [mainMenu,panel,gameScreen].forEach(el=>{el.classList.add('hidden'); el.classList.remove('reveal');});
+  if(which==='main'){revealScreen(mainMenu); if(typeof startMenuScene==='function')startMenuScene();}
+  else if(which==='panel') revealScreen(panel);
+  else if(which==='game') revealScreen(gameScreen);
+}
+function wireButtonFx(root=document){
+  root.querySelectorAll('button').forEach(btn=>{
+    if(btn.dataset.fxWired) return;
+    btn.dataset.fxWired='1';
+    btn.addEventListener('pointerdown', ev=>{
+      btn.classList.remove('fx'); void btn.offsetWidth; btn.classList.add('fx');
+      const rect=btn.getBoundingClientRect();
+      btn.style.setProperty('--rx', ((ev.clientX||rect.left+rect.width/2)-rect.left)+'px');
+      btn.style.setProperty('--ry', ((ev.clientY||rect.top+rect.height/2)-rect.top)+'px');
+    });
+    btn.addEventListener('animationend', ()=>btn.classList.remove('fx'));
+  });
+}
+
+function renderPanel(title, inner){
+  panel.innerHTML = `<div class="panel"><div class="topbar"><button class="panel-btn" id="backMain">← MENÚ</button><div><b>Jugador:</b> ${save.profileName}${save.admin?' · ADMIN':''} · <span class="coin">🪙 ${save.coins}</span></div></div><h2>${title}</h2>${inner}</div>`;
+  panel.querySelector('#backMain').onclick=()=>showScreen('main');
+  wireButtonFx(panel);
+  showScreen('panel');
+}
+
+function openHow(){
+  renderPanel('Cómo jugar', `
+    <p class="center">Avanza <b>hacia la derecha</b>, derrota perros zombis, recoge <b>monedas</b>, usa mejores <b>armas</b> y supera las <b>zonas</b>. El último nivel de cada zona siempre es un <b>jefe</b>.</p>
+    <div class="info-grid">
+      <div class="info-box"><h3>Controles</h3><p>PC: <b>A/D</b> o flechas para moverte, <b>Espacio</b> para saltar, <b>J</b> o <b>K</b> para disparar.</p><p>Celular: juega preferentemente con el teléfono en horizontal y utiliza los botones táctiles.</p></div>
+      <div class="info-box"><h3>Among Us</h3><p>Si equipas uno y mueres, lo pierdes. Podrás <b>recuperarlo con monedas</b> desde tu inventario.</p></div>
+      <div class="info-box"><h3>Final</h3><p>En la última zona, al vencer al jefe conseguirás la <b>llave</b>, abrirás la <b>cápsula</b> y, al sacar el Among Us, <b>todo se derrumbará</b>. ¡Tendrás que escapar!</p></div>
+    </div>`);
+}
+
+function openCodes(){
+  renderPanel('Códigos', `
+    <p class="center">Pon códigos para recibir ventajas. Dos códigos especiales reconocen al jugador automáticamente.</p>
+    <div class="flex">
+      <div class="info-box" style="flex:1 1 280px">
+        <div class="code-list">CT4C-4TJX-27DH → Te reconoce como <b>hector</b>, te da <b>admin</b>, monedas y desbloqueos.<br>7KYT-MGN2-7RTA → Te reconoce como <b>Chinos</b> y te da monedas.<br>GATO-COIN-2026 → +80 monedas.</div>
+      </div>
+      <div class="info-box" style="flex:1 1 280px">
+        <p>Escribe tu código:</p>
+        <div class="flex"><input id="panelCodeInput" style="flex:1;min-width:0;background:#060912;border:2px solid #5b698f;color:#fff;border-radius:10px;padding:10px 12px;text-transform:uppercase" placeholder="XXXX-XXXX-XXXX"><button class="panel-btn" id="panelCodeBtn">Canjear</button></div>
+        <p id="codeResult" class="center"></p>
+      </div>
+    </div>`);
+  panel.querySelector('#panelCodeBtn').onclick=()=>redeemCode(panel.querySelector('#panelCodeInput').value, panel.querySelector('#codeResult'));
+}
+function redeemCode(code, outputEl){
+  code=(code||'').trim().toUpperCase();
+  let msg='Código no válido.';
+  if(code==='CT4C-4TJX-27DH'){
+    save.profileName='hector'; save.admin=true; save.coins=Math.max(save.coins,999); save.highestUnlocked=Math.max(save.highestUnlocked,totalLevels-1); skins.forEach(s=>save.unlockedSkins[s.id]=true); msg='¡Código correcto! Usuario detectado: hector · ADMIN activado.';
+  }else if(code==='7KYT-MGN2-7RTA'){
+    save.profileName='Chinos'; save.coins+=250; msg='¡Bienvenido, Chinos! Recibiste 250 monedas.';
+  }else if(code==='GATO-COIN-2026'){
+    save.coins+=80; msg='Código válido. +80 monedas.';
+  }
+  persist();
+  if(outputEl) outputEl.textContent=msg;
+  else showBanner(msg, 2600);
+}
+
+function openSkins(shopMode=false){
+  renderPanel(shopMode?'Tienda de skins':'Skins', `
+    <p class="center">Elige una skin. Cada una cambia el aspecto de tu gato dentro del juego.</p>
+    <div class="cards">${skins.map(s=>{
+      const own=ownsSkin(s.id), eq=save.equippedSkin===s.id;
+      return `<div class="card">
+        <div class="skin-preview">${skinPreviewHTML(s)}</div>
+        <h3>${s.name}</h3><p>${s.desc}</p><p class="coin">${s.price? '🪙 '+s.price : 'Gratis'}</p>
+        <button data-skin="${s.id}">${own ? (eq?'Equipada':'Equipar') : ('Comprar')}</button>
+      </div>`;
+    }).join('')}</div>`);
+  panel.querySelectorAll('[data-skin]').forEach(btn=>btn.onclick=()=>{
+    const id=btn.dataset.skin; const s=skinById(id);
+    if(!ownsSkin(id)){
+      if(save.coins>=s.price){ save.coins-=s.price; save.unlockedSkins[id]=true; save.equippedSkin=id; persist(); openSkins(shopMode); }
+      else showBanner('No tienes suficientes monedas.',2200);
+    }else{ save.equippedSkin=id; persist(); openSkins(shopMode); }
+  });
+}
+function skinPreviewHTML(s){
+  const [c1,c2,c3,c4]=s.colors; return `<div class="pixel-char" style="--c1:${c1};--c2:${c2};--c3:${c3};--c4:${c4}"><div class="head"></div><div class="body"></div><div class="arm"></div><div class="leg l1"></div><div class="leg l2"></div></div>`;
+}
+
+function openInventory(){
+  const rec = save.pendingRecover ? amongusItems[save.pendingRecover] : null;
+  renderPanel('Inventario', `
+    <div class="info-grid">
+      <div class="info-box"><h3>Among Us equipado</h3><p><b>${amongName(save.equippedAmongus)}</b></p><p>${save.equippedAmongus? amongusItems[save.equippedAmongus].power : 'No hay uno equipado.'}</p>${save.equippedAmongus?'<button class="panel-btn" id="unequipAmong">Quitar</button>':''}</div>
+      <div class="info-box"><h3>Estado</h3><p>Jugador: <b>${save.profileName}</b>${save.admin?' · ADMIN':''}</p><p>Skins desbloqueadas: <b>${Object.keys(save.unlockedSkins).length}</b></p><p>Monedas: <b>🪙 ${save.coins}</b></p>${rec?`<p class="coin">Perdiste <b>${rec.name}</b>. Recuperarlo cuesta <b>${rec.price}</b> monedas.</p><button class="panel-btn" id="recoverBtn">Recuperar</button>`:''}</div>
+      <div class="info-box"><h3>Among Us disponibles</h3>${Object.keys(amongusItems).map(k=>{ const a=amongusItems[k], own=save.ownedAmongus[k]; return `<p><b>${a.name}</b> — ${a.power}<br>${own?'<button class="panel-btn" data-eq="'+k+'">Equipar</button>':'<button class="panel-btn" data-buy="'+k+'">Comprar por 🪙 '+a.price+'</button>'}</p>`}).join('')}</div>
+    </div>`);
+  const une=$('#unequipAmong'); if(une) une.onclick=()=>{save.equippedAmongus=null; persist(); openInventory();};
+  const recBtn=$('#recoverBtn'); if(recBtn) recBtn.onclick=()=>{if(save.coins>=rec.price){save.coins-=rec.price; save.ownedAmongus[rec.id]=true; save.pendingRecover=null; persist(); openInventory();} else showBanner('No tienes monedas para recuperarlo.',2200);};
+  panel.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const a=amongusItems[b.dataset.buy]; if(save.coins>=a.price){save.coins-=a.price; save.ownedAmongus[a.id]=true; persist(); openInventory();} else showBanner('No te alcanza.',2000);});
+  panel.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{ save.equippedAmongus=b.dataset.eq; persist(); openInventory(); });
+}
+
+function openSettings(){
+  renderPanel('Opciones', `
+    <div class="info-grid">
+      <div class="info-box"><h3>Guardar</h3><p>Tu progreso se guarda en este navegador automáticamente.</p><button class="panel-btn" id="resetBtn">Borrar progreso</button></div>
+      <div class="info-box"><h3>Perfil</h3><p>Puedes cambiar el nombre visible.</p><input id="nameInput" style="width:100%;background:#060912;border:2px solid #5b698f;color:#fff;border-radius:10px;padding:10px 12px" value="${save.profileName}"><button class="panel-btn" id="saveNameBtn" style="margin-top:10px">Guardar nombre</button></div>
+    </div>`);
+  $('#resetBtn').onclick=()=>{ if(confirm('¿Borrar todo el progreso?')){ save=defaultSave(); persist(); openSettings(); }};
+  $('#saveNameBtn').onclick=()=>{ save.profileName=$('#nameInput').value.trim()||'Invitado'; persist(); showBanner('Nombre guardado.', 1800); openSettings(); };
+}
+
+function openZones(){
+  renderPanel('Zonas', `<p class="center">Solo puedes jugar niveles desbloqueados. Cada zona tiene 4 niveles y el <b>último siempre es el jefe</b>.</p><div class="flex">${zones.map((z,zi)=>`<div class="zone-card"><h3>${z.name}</h3><p>${z.desc}</p><div class="level-row">${z.levels.map((lv,li)=>{
+    const idx = zones.slice(0,zi).reduce((a,zz)=>a+zz.levels.length,0)+li;
+    const locked = !save.admin && idx>save.highestUnlocked;
+    return `<button class="level-btn ${locked?'locked':''}" data-level="${idx}" ${locked?'disabled':''}><div class="tag">${lv.boss?'JEFE':'FASE '+(li+1)}</div><div class="name">${lv.name}</div><div class="desc">${lv.boss?('Vence a '+lv.bossName):('Cruza la zona y derrota '+lv.quota+' enemigos')}</div><div class="tiny">${locked?'BLOQUEADO':'Disponible'}</div></button>`;
+  }).join('')}</div></div>`).join('')}</div>`);
+  panel.querySelectorAll('[data-level]').forEach(btn=>btn.onclick=()=>startLevel(+btn.dataset.level));
+}
+
+function openPlay(){ openZones(); }
+
+$('#btnPlay').onclick=openPlay; $('#btnZones').onclick=openZones; $('#btnHow').onclick=openHow; $('#btnCodes').onclick=openCodes; $('#btnSkins').onclick=()=>openSkins(false); $('#btnShop').onclick=()=>openSkins(true); $('#btnInventory').onclick=openInventory; $('#btnSettings').onclick=openSettings;
+$('#quickCodeBtn').onclick=()=>redeemCode($('#quickCodeInput').value); $('#quickCodeInput').addEventListener('keydown',e=>{ if(e.key==='Enter') redeemCode(e.target.value); });
+
+let bannerTimer=0;
+function showBanner(text, ms=2000){ const b=$('#banner'); b.textContent=text; b.classList.add('show'); clearTimeout(bannerTimer); bannerTimer=setTimeout(()=>b.classList.remove('show'), ms); }
+
+const keys={};
+window.addEventListener('keydown',e=>{ if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyS','KeyJ','KeyK'].includes(e.code)) e.preventDefault(); keys[e.code]=true; if(e.code==='KeyJ'||e.code==='KeyK') keys.Fire=true; });
+window.addEventListener('keyup',e=>{ keys[e.code]=false; if(e.code==='KeyJ'||e.code==='KeyK') keys.Fire=false; });
+$('#mobileControls').querySelectorAll('button').forEach(btn=>{
+  const key=btn.dataset.key; const down=e=>{e.preventDefault(); if(key==='Fire') keys.Fire=true; else keys[key]=true;}; const up=e=>{e.preventDefault(); if(key==='Fire') keys.Fire=false; else keys[key]=false;};
+  btn.addEventListener('pointerdown',down); btn.addEventListener('pointerup',up); btn.addEventListener('pointercancel',up); btn.addEventListener('pointerleave',up);
+});
+
+let game=null, last=0, raf=0, paused=false;
+$('#pauseBtn').onclick=()=>{paused=!paused; $('#pauseBtn').textContent=paused?'SEGUIR':'PAUSA'; if(!paused){last=performance.now(); raf=requestAnimationFrame(loop);}};
+$('#exitBtn').onclick=()=>{ endGameToMenu(); };
+
+function makeGame(levelIdx){
+  const info=levelIndexToZoneLevel(levelIdx), zone=info.zone, lv=info.level;
+  const skin=skinById(save.equippedSkin);
+  const g={
+    levelIdx, info, zone, lv, worldW:lv.length, groundY:418, cameraX:0, t:0,
+    player:{x:90,y:376,w:36,h:42,vx:0,vy:0,speed:1.75,jump:4.0,onGround:false,dir:1,hp:4,maxHp:4,ifr:0, weapon:'pistol',weaponAmmo:Infinity,fireCd:0, scoreKills:0},
+    bullets:[], enemies:[], drops:[], particles:[], boss:null, bossSpawned:false, kills:0, spawnTimer:0, spawnCount:0,
+    finished:false, message:'', keyDropped:false, doorUnlocked:false, capsuleTaken:false, collapse:false, collapseTimer:0, escapeDoorX:lv.length-140, rubbleTimer:0, bgtint:lv.bg
+  };
+  if(save.equippedAmongus==='speed') g.player.speed*=1.55;
+  if(save.equippedAmongus==='shield') g.player.shield=.75;
+  if(lv.finalBoss) g.player.maxHp=g.player.hp=4; // still low life
+  return g;
+}
+
+function startLevel(levelIdx){
+  $('#bossBar').style.display='none';
+  game=makeGame(levelIdx); updateHUD(); showScreen('game'); paused=false; $('#pauseBtn').textContent='PAUSA'; last=performance.now(); showBanner(`${game.zone.name} · ${game.lv.name}`, 2200); raf=requestAnimationFrame(loop);
+}
+function endGameToMenu(){ cancelAnimationFrame(raf); game=null; wireButtonFx(document);
+showScreen('main'); populateStars(); }
+function completeLevel(){
+  game.finished=true;
+  const next = game.levelIdx+1;
+  if(next>save.highestUnlocked) save.highestUnlocked=Math.min(totalLevels-1,next);
+  if(game.lv.finalBoss && game.capsuleTaken===true && game.player.x<=game.escapeDoorX+55){ save.completedFinal=true; save.ownedAmongus.speed=true; save.equippedAmongus='speed'; }
+  persist();
+  const text = game.lv.finalBoss && game.capsuleTaken ? '¡Escapaste con el Among Us rojo! Zona final completada.' : '¡Nivel completado!';
+  cancelAnimationFrame(raf); showScreen('panel'); renderPanel('Resultado', `<p class="center"><b>${text}</b></p><p class="center">Monedas actuales: <span class="coin">🪙 ${save.coins}</span></p><div class="buttons" style="display:flex;justify-content:center;gap:10px"><button class="panel-btn" id="resMenu">Menú</button><button class="panel-btn" id="resNext">${next<totalLevels?'Siguiente nivel':'Volver a zonas'}</button></div>`);
+  $('#resMenu').onclick=()=>wireButtonFx(document);
+showScreen('main'); $('#resNext').onclick=()=>{ if(next<totalLevels) startLevel(Math.min(next, save.highestUnlocked)); else openZones(); };
+}
+function failLevel(){
+  game.finished=true;
+  if(save.equippedAmongus){ save.pendingRecover=save.equippedAmongus; delete save.ownedAmongus[save.equippedAmongus]; save.equippedAmongus=null; }
+  persist();
+  cancelAnimationFrame(raf); renderPanel('Derrota', `<p class="center">Los perros zombis te derrotaron.</p><p class="center">Perdiste el nivel. ${save.pendingRecover?`También perdiste tu <b>${amongName(save.pendingRecover)}</b>, pero lo puedes recuperar con monedas en el inventario.`:''}</p><div style="display:flex;justify-content:center;gap:10px"><button class="panel-btn" id="retryBtn">Reintentar</button><button class="panel-btn" id="loseMenu">Menú</button></div>`); $('#retryBtn').onclick=()=>startLevel(game.levelIdx); $('#loseMenu').onclick=()=>wireButtonFx(document);
+showScreen('main');
+}
+
+function updateHUD(){
+  if(!game) return; const p=game.player;
+  $('#hudHp').textContent=`${Math.ceil(p.hp)}/${p.maxHp}`; $('#hudCoins').textContent=save.coins; $('#hudSkin').textContent=skinById(save.equippedSkin).name; $('#hudAmong').textContent=amongName(save.equippedAmongus); $('#hudZone').textContent=`${game.zone.name}`;
+  $('#hudObjective').textContent=game.lv.boss ? (game.lv.finalBoss? (game.capsuleTaken? '¡Escapa!':'Vence al jefe y consigue la llave') : (game.keyDropped? 'Toma la llave y llega a la puerta':'Vence al jefe')) : `Avanza y derrota ${game.kills}/${game.lv.quota}`;
+  $('#hudWeapon').textContent=weaponNames[game.player.weapon] + (isFinite(game.player.weaponAmmo)?` (${game.player.weaponAmmo})`: '');
+}
+const weaponStats={ pistol:{cd:18, speed:7.4, damage:16, spread:0, count:1}, smg:{cd:8, speed:8.6, damage:10, spread:0.08, count:1}, shotgun:{cd:28, speed:7.0, damage:8, spread:0.28, count:5}, laser:{cd:14, speed:10.6, damage:18, spread:0, count:1} };
+const weaponNames={pistol:'Pistola', smg:'SMG', shotgun:'Escopeta', laser:'Láser'};
+function shoot(){ const p=game.player, ws=weaponStats[p.weapon]; if(p.fireCd>0) return; p.fireCd=ws.cd; const baseY=p.y+p.h*0.45; for(let i=0;i<ws.count;i++){ const ang=(Math.random()-0.5)*ws.spread; game.bullets.push({x:p.x+p.w*(p.dir>0?1:0), y:baseY, vx:(p.dir*ws.speed), vy:ang*ws.speed, r:p.weapon==='laser'?4:3, dmg:ws.damage, life:80, color:p.weapon==='laser'?'#9ef8ff':'#ffd27e'});} if(isFinite(p.weaponAmmo)){p.weaponAmmo--; if(p.weaponAmmo<=0){p.weapon='pistol'; p.weaponAmmo=Infinity; showBanner('Se te acabó el arma especial.',1500);}} }
+
+function spawnEnemy(){
+  const x = Math.max(game.cameraX+980, game.player.x+420+Math.random()*300);
+  const mode=game.lv.enemy||'normal';
+  let hp=32, speed=1.0, dmg=0.65, type='zombie';
+  if(mode==='mixed'||mode==='mixed2'||mode==='fast'){
+    const r=Math.random();
+    if(r<0.28){hp=22; speed=1.45; dmg=.55; type='runner';}
+    else if(r<0.52){hp=48; speed=.85; dmg=.9; type='brute';}
+    if(mode==='mixed2'){ hp*=1.1; speed*=1.04; }
+    if(mode==='fast'){ speed*=1.18; hp*=1.06; }
+  }
+  game.enemies.push({x,y:382,w:type==='brute'?34:28,h:type==='brute'?44:38,vx:-speed,hp,maxHp:hp,dmg,type,ifr:0,atkCd:0});
+}
+function spawnBoss(){
+  if(game.bossSpawned) return; game.bossSpawned=true; const lv=game.lv;
+  game.boss={x:game.worldW-300,y:360,w:72,h:76,hp:lv.bossHp,maxHp:lv.bossHp,vx:-1.05,dmg:lv.bossDamage,ifr:0,atkCd:0,name:lv.bossName}; $('#bossBar').style.display='block'; $('#bossLabel').textContent=lv.bossName;
+  showBanner(`¡Apareció ${lv.bossName}!`, 2400);
+}
+
+function loop(ts){
+  if(!game || game.finished || paused) return; const dt=Math.min(2.1,(ts-last)/16.666); last=ts; update(dt); if(!game || game.finished) return; draw(); raf=requestAnimationFrame(loop);
+}
+function update(dt){
+  const g=game,p=g.player; g.t+=dt;
+  const left=keys.ArrowLeft||keys.KeyA, right=keys.ArrowRight||keys.KeyD, up=keys.Space||keys.KeyW||keys.ArrowUp;
+  p.vx=(right?1:0-(left?1:0))*p.speed; if(p.vx) p.dir = p.vx>0?1:-1;
+  if(up&&p.onGround){p.vy=-p.jump; p.onGround=false;}
+  p.vy += 0.48*dt; p.x += p.vx*3.2*dt; p.y += p.vy*3.2*dt;
+  if(p.y+p.h>=g.groundY){p.y=g.groundY-p.h;p.vy=0;p.onGround=true}
+  p.x=Math.max(0,Math.min(g.worldW-70,p.x)); if(p.ifr>0) p.ifr-=dt; if(p.fireCd>0) p.fireCd-=dt;
+  if(keys.Fire) shoot();
+  g.cameraX=Math.max(0,Math.min(g.worldW-canvas.width,p.x-170));
+  if(!g.lv.boss){ if(g.spawnTimer<=0 && g.kills<g.lv.quota && g.enemies.length<6){ spawnEnemy(); g.spawnTimer=35-Math.min(12,g.kills*.25); g.spawnCount++; } else g.spawnTimer-=dt; }
+  else{ if(!g.bossSpawned && p.x>g.worldW*0.62) spawnBoss(); if(!g.bossSpawned && g.spawnTimer<=0 && g.spawnCount<10){ spawnEnemy(); g.spawnTimer=42; g.spawnCount++; } else g.spawnTimer-=dt; }
+
+  // bullets
+  for(let i=g.bullets.length-1;i>=0;i--){ const b=g.bullets[i]; b.x += b.vx*dt; b.y += b.vy*dt; if(--b.life<=0 || b.x<0 || b.x>g.worldW){g.bullets.splice(i,1); continue;} let hit=false;
+    if(g.boss && rectCircle(g.boss,b)){ damageEnemy(g.boss,b.dmg); hit=true; }
+    for(let j=g.enemies.length-1;j>=0 && !hit;j--){const e=g.enemies[j]; if(rectCircle(e,b)){ damageEnemy(e,b.dmg); hit=true; }}
+    if(hit){ makeBurst(b.x,b.y,b.color,4); g.bullets.splice(i,1);} }
+
+  // enemies
+  for(let i=g.enemies.length-1;i>=0;i--){ const e=g.enemies[i]; if(e.ifr>0)e.ifr-=dt; if(e.atkCd>0)e.atkCd-=dt; const dir=Math.sign(p.x-e.x)||-1; e.x += dir*(Math.abs(e.vx)+0.3*(e.type==='runner'))*dt*2.05; if(overlap(e,p)){ if(e.atkCd<=0){ hitPlayer(e.dmg); e.atkCd=28; }} if(e.x<g.cameraX-140||e.hp<=0) g.enemies.splice(i,1); }
+  if(g.boss){ const e=g.boss; if(e.ifr>0)e.ifr-=dt; if(e.atkCd>0)e.atkCd-=dt; const dir=Math.sign(p.x-e.x)||-1; e.x += dir*1.25*dt; if(overlap(e,p)&&e.atkCd<=0){ hitPlayer(e.dmg); e.atkCd=22; }
+    if(Math.random()<0.03*dt){ game.particles.push({x:e.x+e.w/2,y:e.y+e.h/2,vx:(Math.random()*4-2),vy:-2-Math.random()*2,life:35,c:'#adf'}); }
+    if(e.hp<=0){ g.boss=null; $('#bossBar').style.display='none'; if(g.lv.finalBoss){ g.keyDropped=true; g.drops.push({x:p.x+180,y:390,type:'key'}); showBanner('El jefe dejó una LLAVE. ¡Ve por ella!',2600); } else { g.keyDropped=true; g.drops.push({x:p.x+180,y:390,type:'key'}); showBanner('Toma la llave y ve a la puerta.',2200);} }
+  }
+  if(g.boss){ $('#bossFill').style.width=(100*g.boss.hp/g.boss.maxHp)+'%'; }
+
+  // drops
+  for(let i=g.drops.length-1;i>=0;i--){ const d=g.drops[i]; d.x+=d.vx||0; d.y += (d.vy||0); if(d.y<390) d.vy=(d.vy||0)+0.2*dt; else {d.y=390; d.vy=0;} if(overlap({x:d.x,y:d.y,w:18,h:18}, p)){ collectDrop(d); g.drops.splice(i,1);} }
+  // particles
+  for(let i=g.particles.length-1;i>=0;i--){ const q=g.particles[i]; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=0.08*dt; if(--q.life<=0) g.particles.splice(i,1); }
+
+  // objectives and special flow
+  if(!g.lv.boss){ if(g.kills>=g.lv.quota && p.x>g.worldW-120){ addCoins(30); completeLevel(); return; } }
+  else{
+    if(g.keyDropped && !g.doorUnlocked && p.x>g.worldW-100){ g.doorUnlocked=true; if(g.lv.finalBoss){ showBanner('La puerta del santuario está abierta.',2200); } else { addCoins(60); completeLevel(); return; } }
+    if(g.lv.finalBoss && g.doorUnlocked && !g.capsuleTaken && p.x>g.worldW-260){ /* can take capsule near end */ }
+  }
+  
+  if(g.collapse){ g.collapseTimer-=dt; g.rubbleTimer-=dt; if(g.rubbleTimer<=0){ g.rubbleTimer=5; g.particles.push({x:g.cameraX+Math.random()*canvas.width,y:-10,vx:0,vy:2+Math.random()*3,life:90,c:'#8a867d',rock:true}); if(Math.random()<0.34) hitPlayer(.2); } if(p.x<=g.escapeDoorX+55){ addCoins(180); completeLevel(); return; } if(g.collapseTimer<=0){ failLevel(); return; } }
+
+  if(g.lv.finalBoss && g.doorUnlocked && !g.capsuleTaken && p.x>g.worldW-220){ showBanner('Presiona adelante para sacar el Among Us de la cápsula.',1800); }
+  if(g.lv.finalBoss && g.doorUnlocked && !g.capsuleTaken && p.x>g.worldW-140){ // take capsule automatically
+    g.capsuleTaken=true; g.collapse=true; g.collapseTimer=1150; p.speed*=1.55; g.rubbleTimer=0; save.ownedAmongus.speed=true; save.equippedAmongus='speed'; persist(); showBanner('¡AMONG US RESCATADO! LA CUEVA SE DERRUMBA. ¡HUYE HACIA LA IZQUIERDA! ←', 3200);
+    p.x=Math.max(120,p.x-40); g.escapeDoorX=65; p.dir=-1; // return left through the collapsing cave
+  }
+
+  updateHUD();
+}
+function hitPlayer(dmg){ const p=game.player; if(p.ifr>0) return; let d=dmg; if(p.shield) d*=p.shield; p.hp-=d; p.ifr=22; showBanner('¡Te mordió un perro zombi!', 700); if(p.hp<=0){ failLevel(); } }
+function damageEnemy(e,d){ if(e.ifr>0) return; e.hp-=d; e.ifr=4; if(e!==game.boss && e.hp<=0){ enemyDie(e); } }
+function enemyDie(e){ game.kills++; game.player.scoreKills++; makeBurst(e.x+e.w/2,e.y+e.h/2,'#a5ffb1',8); const r=Math.random(); if(r<0.45){ game.drops.push({x:e.x,y:375,type:'coin',amt:5+Math.floor(Math.random()*8)}); } else if(r<0.59){ const w=['smg','shotgun','laser'][Math.floor(Math.random()*3)]; game.drops.push({x:e.x,y:375,type:'weapon',weapon:w}); } else if(r<0.68){ game.drops.push({x:e.x,y:375,type:'heart'}); } }
+function collectDrop(d){ if(d.type==='coin'){ let amt=d.amt||8; if(save.equippedAmongus==='coin') amt=Math.round(amt*1.5); addCoins(amt); showBanner('+'+amt+' monedas',700); }
+  else if(d.type==='heart'){ game.player.hp=Math.min(game.player.maxHp, game.player.hp+1); showBanner('Recuperaste vida.',700); }
+  else if(d.type==='weapon'){ game.player.weapon=d.weapon; game.player.weaponAmmo = d.weapon==='smg'?90 : d.weapon==='shotgun'?28 : 40; showBanner('Recogiste '+weaponNames[d.weapon],1300); }
+  else if(d.type==='key'){ game.keyDropped=false; game.doorUnlocked=true; if(game.lv.finalBoss) showBanner('La llave abrió el santuario de la cápsula.',2000); else showBanner('La llave abrió la puerta final.',1800); }
+}
+function makeBurst(x,y,c,n){ for(let i=0;i<n;i++) game.particles.push({x,y,vx:(Math.random()*4-2),vy:(Math.random()*-3),life:25+Math.random()*20,c}); }
+function overlap(a,b){ return a.x<a.x+a.w && a.x+a.w>b.x && a.y+a.h>b.y && a.y<b.y+b.h && a.x<b.x+b.w; }
+function rectCircle(r,b){ return b.x>r.x && b.x<r.x+r.w && b.y>r.y && b.y<r.y+r.h; }
+
+
+function px(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);}
+function renderCat(c,x,y,skin,dir=1,step=0,weapon='pistol'){
+ c.save();c.translate(Math.round(x),Math.round(y));
+ // cast shadow grounded to the floor, drawn independently from character's movement
+ const [coat,hair,shirt,boot]=skin.colors;
+ const ink='#151a22', fur=skin.id==='cat'?'#efba70':coat, light=skin.id==='cat'?'#ffe1a0':hair;
+ const bob=Math.sin(step*.62)*.6;
+ c.translate(0, Math.round(bob));
+ px(c,-7,23,12,6,ink);px(c,-8,17,7,11,fur);px(c,-5,13,7,5,light);
+ // small cartoon body, recognizable from the original design
+ px(c,5,20,27,18,ink);px(c,7,22,23,14,shirt);px(c,8,34,9,7,ink);px(c,22,34,9,7,ink);
+ px(c,10,35,5,5,boot);px(c,23,35,5,5,boot);
+ // chunky ears and cat face with clean pixel edges
+ px(c,7,1,10,15,ink);px(c,22,1,10,15,ink);
+ px(c,9,3,6,10,fur);px(c,24,3,6,10,fur);
+ px(c,10,5,3,6,'#e99498');px(c,26,5,3,6,'#e99498');
+ px(c,3,11,33,23,ink);px(c,5,13,29,18,light);px(c,7,13,25,4,fur);
+ px(c,10,20,5,6,'#263338');px(c,25,20,5,6,'#263338');
+ px(c,13,21,2,2,'#e3f9e9');px(c,26,21,2,2,'#e3f9e9');
+ px(c,18,27,5,4,'#e38a87');px(c,14,30,3,2,'#fff0c7');px(c,24,30,3,2,'#fff0c7');
+ if(skin.id==='spider'){px(c,9,18,7,7,'#f4f8fc');px(c,23,18,7,7,'#f4f8fc');}
+ if(skin.id==='mando'){px(c,7,16,25,14,'#738493');px(c,13,18,13,5,'#16242d');}
+ if(skin.id==='miku'){px(c,-1,6,7,24,'#61c6c6');px(c,33,6,7,24,'#61c6c6');}
+ if(skin.id==='jax'){px(c,10,-7,7,15,'#9874e5');px(c,25,-7,7,15,'#9874e5');}
+ if(skin.id==='jonesy'){px(c,7,4,27,8,'#e6ce5b');px(c,9,3,7,3,'#ffe981');}
+ // gun held away from the muzzle, proper grip and barrel
+ const gx=dir>0?32:-17;
+ const gun=weapon==='laser'?'#8de5f3':weapon==='shotgun'?'#d6a576':'#a9b8bd';
+ px(c,gx,22,18,7,ink);px(c,gx+1,23,15,4,gun);px(c,gx+6,28,5,8,'#53636e');
+ px(c,dir>0?47:-20,23,5,3,'#d1eff0');
+ c.restore();
+}
+function renderZombieDog(c,x,y,dir=1,type='zombie',isBoss=false,step=0){
+ c.save();c.translate(Math.round(x),Math.round(y));
+ const scale=isBoss?1.85:1;c.scale(scale,scale);
+ const ink='#182328', fur=isBoss?'#667e7a':type==='runner'?'#92b986':type==='brute'?'#768780':'#81a18c';
+ const dark='#3c5b56', glow='#dbfba1',bob=Math.round(Math.sin(step)*1);
+ c.translate(0,bob);
+ // tail, back, visible legs, folds
+ px(c,30,13,10,6,fur);px(c,38,6,6,14,dark);
+ px(c,7,16,29,19,ink);px(c,9,17,26,17,fur);px(c,12,31,6,11,dark);px(c,29,31,6,11,dark);
+ px(c,10,15,20,4,'#a2b6a5');px(c,26,26,9,3,dark);
+ // muzzle points left, two hanging ears, glowing infection eyes
+ px(c,0,10,22,23,ink);px(c,2,12,19,19,fur);
+ px(c,4,3,8,17,ink);px(c,5,5,5,12,dark);
+ px(c,17,5,8,11,ink);px(c,18,6,5,9,dark);
+ px(c,-7,23,15,10,ink);px(c,-5,24,13,8,'#718b7b');px(c,-7,25,5,4,'#151b21');
+ px(c,7,20,5,4,glow);px(c,17,20,4,4,glow);
+ px(c,7,29,7,3,'#334f49');px(c,28,22,3,7,'#4d7160');
+ if(isBoss){px(c,5,-4,26,5,'#d2b171');for(let i=0;i<3;i++)px(c,7+i*9,-12+i%2*3,5,11,'#f4db98');px(c,32,29,3,7,'#e6e9a7');}
+ c.restore();
+}
+
+
+function drawMenuScene(){
+ const m=document.getElementById('menuCanvas');if(!m)return;
+ const c=m.getContext('2d');c.imageSmoothingEnabled=false;
+ const t=performance.now()/1000, illusion={cameraX:t*12, bgtint:'lair',groundY:440,t};
+ caveBackdrop(illusion,c,t);
+ c.fillStyle='#242e31';c.fillRect(0,441,960,99);c.fillStyle='#69726b';c.fillRect(0,440,960,5);
+ for(let i=0;i<20;i++){let x=i*57-(t*11%57);c.fillStyle='#131e25';c.fillRect(x,464+(i%3)*12,30,4);}
+ // spotlight on the two silhouettes, each with a subtle idle bob
+ let a=c.createRadialGradient(150,370,5,150,370,195);a.addColorStop(0,'#e8ba6850');a.addColorStop(1,'#dcb16c00');c.fillStyle=a;c.fillRect(0,170,390,350);
+ a=c.createRadialGradient(830,390,5,830,390,200);a.addColorStop(0,'#96d8943e');a.addColorStop(1,'#96d89400');c.fillStyle=a;c.fillRect(610,170,350,350);
+ // draw our real pixel-cat design; no Among Us copy
+ c.save();c.translate(70,350+Math.sin(t*2)*3);c.scale(3.25,3.25);
+ renderCat(c,0,0,skinById(save.equippedSkin),1,t*9, 'pistol');c.restore();
+ c.save();c.translate(790,354+Math.sin(t*1.8)*4);c.scale(3.0,3.0);
+ renderZombieDog(c,0,0,1,'zombie',false,t*8);c.restore();
+ // tiny ember particles
+ for(let i=0;i<20;i++){const x=(i*91.7+Math.sin(t*.2+i)*22)%960,y=(i*59+(t*(9+i%5)*.8))%540;c.fillStyle=i%3?'#a0cc90':'#e6b68c';c.fillRect(x,y,2,2);}
+ if(!mainMenu.classList.contains('hidden')) requestAnimationFrame(drawMenuScene);
+ else menuSceneRunning=false;
+}
+let menuSceneRunning=false;
+function startMenuScene(){if(!menuSceneRunning){menuSceneRunning=true;requestAnimationFrame(drawMenuScene);}}
+
+function draw(){
+  const g=game, p=g.player; ctx.clearRect(0,0,canvas.width,canvas.height); drawBG(g);
+  drawGround(g); drawLevelProps(g); drawDoorCapsule(g);
+  // bullets
+  for(const b of g.bullets){ ctx.fillStyle=b.color; ctx.fillRect(Math.round(b.x-g.cameraX), Math.round(b.y), b.r*2, b.r); }
+  // enemies
+  for(const e of g.enemies) drawDogEnemy(e);
+  if(g.boss) drawDogEnemy(g.boss,true);
+  for(const d of g.drops) drawDrop(d);
+  drawPlayer(p, skinById(save.equippedSkin));
+  for(const q of g.particles){ ctx.fillStyle=q.c; const s=q.rock?8:3; ctx.fillRect(Math.round(q.x-g.cameraX), Math.round(q.y), s, s); }
+}
+const noise = n=>{let v=Math.sin(n*127.17+23.41)*43758.5453;return v-Math.floor(v);};
+const caveThemes={
+ mine:['#080e13','#12212a','#263239','#9ec69a'], mushroom:['#0b0d1a','#192038','#2b3650','#bd9bfe'],bridge:['#0b1017','#172633','#293947','#73d4d1'],lair:['#110b15','#291b28','#43313e','#ff8c86'],
+ lab:['#071414','#17302f','#2e4844','#7cffa5'],cages:['#0c1319','#172e34','#305058','#9cdbca'],pipes:['#0d151c','#172c39','#2c4454','#6fa9eb'],bosslab:['#1b0c10','#2d171d','#4b292d','#ffb16c'],
+ crystal:['#090e20','#142844','#244964','#88d9ff'],echo:['#090f21','#172841','#2a496b','#8fa5f9'],altar:['#0d1024','#1c2751','#3a4275','#e8b1ff'],final:['#150b24','#2d1a4a','#433572','#f19cf0']
+};
+function caveBackdrop(g, target=ctx, sceneTime=0){
+ const c=target, w=960, h=540, cam=g.cameraX||0;
+ const theme=caveThemes[g.bgtint]||caveThemes.mine;
+ c.fillStyle=theme[0]; c.fillRect(0,0,w,h);
+ let grad=c.createLinearGradient(0,0,0,450); grad.addColorStop(0,theme[0]);grad.addColorStop(.55,theme[1]);grad.addColorStop(1,theme[2]);c.fillStyle=grad;c.fillRect(0,0,w,455);
+ // cavern depth: several rock ridges with seamless parallax
+ for(let layer=0;layer<3;layer++){
+  const scroll=cam*(.12+layer*.14), step=92-layer*11;
+  c.beginPath();c.moveTo(-20,420);
+  for(let i=-2;i<Math.ceil(w/step)+4;i++){
+   const global=i+Math.floor(scroll/step), x=i*step-(scroll%step), crown=178+layer*55+noise(global+layer*200)*39;
+   const rise=16+noise(global*3+layer)*31;
+   c.lineTo(x,crown+12);c.lineTo(x+step*.16,crown+5);
+   c.lineTo(x+step*.23,crown-10);c.lineTo(x+step*.42,crown-10-rise);
+   c.lineTo(x+step*.59,crown-12-rise);c.lineTo(x+step*.73,crown-4);
+   c.lineTo(x+step,crown+22);
+  }
+  c.lineTo(w+30,430);c.lineTo(-20,430);c.closePath();c.fillStyle=[theme[1],theme[2],'#111920'][layer];c.fill();
+ }
+ // crevasses in the ceiling with overhead teeth
+ c.fillStyle='#090c14';c.beginPath();c.moveTo(0,0);
+ for(let i=0;i<=27;i++){let x=i*38, y=40+noise(i+17)*20;
+  c.lineTo(x,y);if(i%2===0)c.lineTo(x+10,y+28+noise(i*2)*25);
+ }
+ c.lineTo(w,0);c.closePath();c.fill();
+ c.fillStyle='#151d27'; for(let i=0;i<27;i++){let x=(i*83-cam*.28)%1160;if(x<-35)x+=1160;let y=48+noise(i+50)*16;let drop=25+noise(i*2+22)*48; c.fillRect(x,y,9,drop); c.fillRect(x+3,y+drop,4,11);}
+ // shadows near floor, separated from the playfield
+ c.fillStyle='#131c25';c.fillRect(0,393,w,25);
+ const lanternColor=theme[3];
+ for(let i=0;i<12;i++){
+   const x=i*190-(cam*.45%190);
+   if(x<-40||x>1020) continue;
+   let y=225+Math.floor(noise(i*7)*95);
+   c.fillStyle='#202b32';c.fillRect(x,y,17,418-y);c.fillRect(x-7,y-5,31,8);
+   c.fillStyle='#435354';c.fillRect(x+2,y+5,4,90);
+   if(i%3===0){
+      const lx=x+8,ly=y+22;
+      let rad=c.createRadialGradient(lx,ly,2,lx,ly,120);
+      rad.addColorStop(0,lanternColor+'50');rad.addColorStop(1,lanternColor+'00');c.fillStyle=rad;c.fillRect(lx-120,ly-120,240,240);
+      c.fillStyle=lanternColor;c.fillRect(lx-5,ly-5,11,12);c.fillStyle='#ebf7dd';c.fillRect(lx-2,ly-3,5,6);
+   }
+ }
+}
+function drawBG(g){caveBackdrop(g,ctx,g.t);}
+function drawGround(g){
+ const gy=g.groundY,cam=g.cameraX;
+ ctx.fillStyle='#141c22';ctx.fillRect(0,gy,960,122);
+ ctx.fillStyle='#677066';ctx.fillRect(0,gy,960,5);
+ ctx.fillStyle='#414e4b';ctx.fillRect(0,gy+5,960,7);
+ for(let i=Math.floor(cam/48)-1;i<Math.ceil((cam+960)/48)+1;i++){
+  const x=i*48-cam, tint=noise(i*2);
+  ctx.fillStyle=tint>.55?'#303a39':'#293333';ctx.fillRect(x,gy+12,47,45);
+  ctx.fillStyle='#1c292d';ctx.fillRect(x+5,gy+16+noise(i)*23,21+noise(i+1)*13,3);
+  if(i%4===0){ctx.fillStyle='#485753';ctx.fillRect(x+4,gy+6,15,4);ctx.fillRect(x+32,gy+25,8,3)}
+  ctx.fillStyle='#181e25';ctx.fillRect(x,gy+57,48,65);
+ }
+ ctx.fillStyle='#0c1118';ctx.fillRect(0,gy+109,960,20);
+}
+function drawLevelProps(g){
+ const cam=g.cameraX, theme=(caveThemes[g.bgtint]||caveThemes.mine)[3];
+ // crystal clusters; local lights keep them readable without flooding the scene
+ for(let i=Math.floor(cam/250)-1;i<Math.ceil((cam+960)/250)+1;i++){
+  const x=i*250+70-cam, y=380, variation=noise(i*17);
+  if(x<-90||x>1050)continue;
+  if(i%3===0){
+   let glow=ctx.createRadialGradient(x,y,3,x,y,56);glow.addColorStop(0,theme+'44');glow.addColorStop(1,theme+'00');ctx.fillStyle=glow;ctx.fillRect(x-56,y-56,112,112);
+   ctx.fillStyle='#263e44';ctx.fillRect(x-12,y-9,26,35);ctx.fillStyle=theme;ctx.fillRect(x-3,y-24,9,30);ctx.fillRect(x+8,y-14,7,21);ctx.fillStyle='#d4faff';ctx.fillRect(x,y-22,3,10);
+  }else{
+   ctx.fillStyle='#28332e';ctx.fillRect(x-20,y+17,41,5);ctx.fillStyle='#48504b';ctx.fillRect(x-10,y+10,25,7);ctx.fillRect(x+6,y+2,13,10);ctx.fillStyle='#59625b';ctx.fillRect(x+7,y+2,8,3);
+  }
+  if(variation>.66){ctx.fillStyle='#6f8d73';ctx.fillRect(x+35,405,3,14);ctx.fillRect(x+30,403,15,4);}
+ }
+ // foreground silhouettes give depth
+ ctx.fillStyle='#070d13'; for(let i=0;i<13;i++){const x=i*125-(cam*.68%125);const yy=430+noise(i*8)*17;
+  ctx.beginPath();ctx.moveTo(x-32,540);ctx.lineTo(x-3,yy);ctx.lineTo(x+33,540);ctx.fill();}
+}
+
+function drawDoorCapsule(g){
+ const cam=g.cameraX, pos=g.worldW-112-cam;
+ const gate=(x,y,unlocked)=>{
+  ctx.fillStyle='#263238';ctx.fillRect(x-8,y-16,76,154);ctx.fillStyle='#59646a';ctx.fillRect(x-5,y-14,70,8);
+  ctx.fillStyle=unlocked?'#19383a':'#2d2329';ctx.fillRect(x+2,y+2,56,120);
+  ctx.fillStyle=unlocked?'#70fae8':'#d37274';ctx.fillRect(x+5,y+8,6,104);ctx.fillRect(x+49,y+8,6,104);
+  ctx.fillStyle=unlocked?'#baffee':'#e8aa9a';ctx.fillRect(x+21,y-11,24,7);
+ };
+ if(!g.lv.finalBoss){gate(pos,296,g.doorUnlocked);return;}
+ // the finale has a sanctuary behind a locked gateway
+ gate(g.worldW-285-cam,284,g.doorUnlocked);
+ if(g.doorUnlocked && !g.capsuleTaken){
+   const x=g.worldW-165-cam;
+   let cg=ctx.createRadialGradient(x,343,2,x,343,90);cg.addColorStop(0,'#69daeb44');cg.addColorStop(1,'#69daeb00');ctx.fillStyle=cg;ctx.fillRect(x-90,253,180,180);
+   ctx.fillStyle='#36555c';ctx.fillRect(x-45,284,90,134);ctx.fillStyle='#96e7f7';ctx.fillRect(x-38,292,76,112);
+   ctx.fillStyle='#376b75';ctx.fillRect(x-29,300,58,95);ctx.fillStyle='#f26468';ctx.fillRect(x-9,322,19,32);ctx.fillStyle='#c4faff';ctx.fillRect(x-2,332,12,7);
+ }
+ if(g.collapse){gate(50-cam,286,true);}
+}
+function drawDogEnemy(e,boss=false){
+ const x=Math.round(e.x-game.cameraX),y=Math.round(e.y);
+ // clean contact shadows, no generic colored rectangles
+ ctx.fillStyle='rgba(0,0,0,.37)';ctx.fillRect(x+4,y+e.h-1,e.w-4,4);
+ ctx.save();if(e.ifr>0 && Math.floor(e.ifr)%2===0)ctx.globalAlpha=.64;
+ renderZombieDog(ctx,x+(boss?0:-3),y+(boss?0:-2),-1,e.type,boss,game.t*.2);
+ ctx.restore();
+ if(!boss){ctx.fillStyle='#0d1117';ctx.fillRect(x,y-7,e.w,4);ctx.fillStyle='#97da8f';ctx.fillRect(x,y-7,e.w*Math.max(0,e.hp/e.maxHp),4);}
+}
+function drawPlayer(p,skin){
+ const x=Math.round(p.x-game.cameraX),y=Math.round(p.y);
+ ctx.fillStyle='rgba(0,0,0,.42)';ctx.fillRect(x+4,game.groundY-1,34,5);
+ ctx.save(); if(p.ifr>0&&Math.floor(p.ifr)%2===0)ctx.globalAlpha=.6;
+ renderCat(ctx,x,y,skin,p.dir,game.t*(Math.abs(p.vx)>.1?.75:0),p.weapon);
+ ctx.restore();
+ if(save.equippedAmongus){ctx.fillStyle=save.equippedAmongus==='speed'?'#ff7070':save.equippedAmongus==='shield'?'#71c8ff':'#f5da85';ctx.fillRect(x+19,y-13,9,9);ctx.fillStyle='#131824';ctx.fillRect(x+24,y-10,3,2);}
+}
+function drawDrop(d){ const x=Math.round(d.x-game.cameraX), y=Math.round(d.y); if(d.type==='coin'){ ctx.fillStyle='#ffd861'; ctx.beginPath(); ctx.arc(x+8,y+8,7,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#ae8122'; ctx.fillRect(x+6,y+5,4,6);} else if(d.type==='heart'){ ctx.fillStyle='#ff7f96'; ctx.fillRect(x+3,y+4,5,5); ctx.fillRect(x+8,y+4,5,5); ctx.fillRect(x+5,y+8,6,6); } else if(d.type==='weapon'){ ctx.fillStyle=d.weapon==='smg'?'#95ffaa':d.weapon==='shotgun'?'#ffca7f':'#93f7ff'; ctx.fillRect(x+1,y+7,16,4); ctx.fillStyle='#444'; ctx.fillRect(x+13,y+5,3,8);} else if(d.type==='key'){ ctx.fillStyle='#f5de7c'; ctx.fillRect(x+2,y+6,14,4); ctx.fillRect(x+12,y+6,4,10); ctx.fillRect(x+8,y+12,4,4); } }
+
+wireButtonFx(document);
+showScreen('main');
+startMenuScene();
+})();
+</script>
+</body>
+</html>
